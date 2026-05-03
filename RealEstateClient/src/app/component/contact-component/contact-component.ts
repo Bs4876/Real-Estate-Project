@@ -8,6 +8,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AdminInquiryService } from '../../services/admin-inquiry-service';
 import { UserService } from '../../services/user-service';
+import { RateLimitService } from '../../services/rate-limit.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
@@ -82,6 +83,7 @@ export class ContactComponent implements AfterViewInit {
     private messageService: MessageService,
     private adminInquiryService: AdminInquiryService,
     private userService: UserService,
+    private rateLimitService: RateLimitService,
     private elementRef: ElementRef
   ) {}
 
@@ -110,6 +112,16 @@ export class ContactComponent implements AfterViewInit {
   }
 
   onSubmit() {
+    if (this.rateLimitService.isBlocked()) {
+      const seconds = this.rateLimitService.secondsUntilAvailable();
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'פעילות חריגה',
+        detail: `המערכת זיהתה פעילות חריגה. אנא המתן עוד ${seconds} שניות`
+      });
+      return;
+    }
+
     if (this.isFormValid()) {
       const currentUser = this.userService.getCurrentUser();
       const inquiry = {
@@ -129,9 +141,23 @@ export class ContactComponent implements AfterViewInit {
             detail: 'ניצור איתך קשר בהקדם האפשרי'
           });
           this.resetForm();
+          this.rateLimitService.resetBackoff();
         },
         error: (err) => {
           console.error('Error sending message:', err);
+          // If server returned 429, apply exponential backoff and show message
+          if (err && err.status === 429) {
+            const nextIso = this.rateLimitService.applyBackoff();
+            const seconds = this.rateLimitService.secondsUntilAvailable();
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'פעילות חריגה',
+              detail: `המערכת זיהתה פעילות חריגה. אנא המתן עוד ${seconds} שניות`
+            });
+            console.warn('Next allowed at', nextIso);
+            return;
+          }
+
           this.messageService.add({
             severity: 'error',
             summary: 'שגיאה',
