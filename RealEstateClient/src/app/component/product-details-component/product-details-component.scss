@@ -1,0 +1,383 @@
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.container {
+  animation: fadeInUp 0.6s ease-out;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grid.shadow-4 {
+  animation: scaleIn 0.5s ease-out;
+  transition: all 0.4s ease;
+  border-top: 4px solid transparent;
+  border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
+  
+  &:hover {
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2) !important;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cursor-pointer {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+  
+  &.border-3.border-primary {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(102, 126, 234, 0);
+  }
+}
+
+img {
+  transition: transform 0.4s ease;
+}
+
+.flex-grow-1 img:hover {
+  transform: scale(1.02);
+}
+
+h1 {
+  animation: slideInRight 0.6s ease-out;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.text-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.bg-orange-50 {
+  animation: fadeIn 0.7s ease-out;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.2);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.grid.text-center {
+  animation: fadeIn 0.8s ease-out;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  }
+}
+
+.surface-50 {
+  animation: fadeIn 0.9s ease-out;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+  border: 1px solid #e0e7ff;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  }
+}
+
+::ng-deep {
+  .p-button {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    font-weight: 600;
+    
+    &:not(.p-button-text):not(.p-button-outlined) {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      
+      &:hover {
+        background: linear-gradient(135deg, #5568d3, #6a3f8f);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+    }
+    
+    &.p-button-success {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      
+      &:hover {
+        background: linear-gradient(135deg, #5568d3, #6a3f8f);
+      }
+    }
+    
+    &.p-button-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      
+      &:hover {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+      }
+    }
+    
+    &.p-button-outlined {
+      border: 2px solid #667eea;
+      color: #667eea;
+      
+      &:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-color: #764ba2;
+        color: #764ba2;
+      }
+    }
+    
+    &.p-button-text {
+      color: #667eea;
+      
+      &:hover {
+        background: rgba(102, 126, 234, 0.1);
+        color: #764ba2;
+      }
+    }
+  }
+  
+  .p-tag {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+  
+  .p-datepicker {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    
+    &:hover {
+      border-color: #c7d2fe;
+    }
+  }
+  
+  .p-dialog {
+    border-radius: 16px;
+    overflow: hidden;
+    animation: zoomIn 0.3s ease-out;
+    border-top: 4px solid transparent;
+    border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
+    
+    .p-dialog-header {
+      background: linear-gradient(135deg, #f8f9ff, #f0f4ff);
+      color: #1f2937;
+      font-weight: 700;
+      border-bottom: 2px solid #e0e7ff;
+    }
+    
+    .p-dialog-content {
+      animation: fadeIn 0.4s ease-out;
+    }
+  }
+  
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .field {
+    animation: slideInLeft 0.5s ease-out backwards;
+    
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.3s; }
+    &:nth-child(4) { animation-delay: 0.4s; }
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  input, textarea {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: #c7d2fe;
+    }
+    
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+  
+  .pi-star-fill {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.2) rotate(15deg);
+    }
+  }
+  
+  .contact-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .lightbox-dialog {
+    .p-dialog-content {
+      background: #000;
+      padding: 0;
+    }
+    
+    .p-dialog-header {
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .p-dialog-footer {
+      background: rgba(0, 0, 0, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.availability-indicator {
+  animation: slideInDown 0.4s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.occupied-date-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: fadeInScale 0.3s ease;
+}
+
+.availability-message {
+  animation: slideInUp 0.4s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* עיצוב ל-tooltip של תאריכים תפוסים */
+::ng-deep .p-datepicker-calendar td.p-disabled[title] {
+  position: relative;
+}
+
+::ng-deep .p-datepicker-calendar td.p-disabled[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+::ng-deep .p-datepicker-calendar td.p-disabled[title]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(2px);
+  border: 5px solid transparent;
+  border-top-color: #333;
+  z-index: 1000;
+}

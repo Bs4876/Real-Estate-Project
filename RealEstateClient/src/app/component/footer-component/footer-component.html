@@ -1,0 +1,66 @@
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3 class="footer-title">
+        <i class="pi pi-home"></i>
+        RealEstate
+      </h3>
+      <p class="footer-description">
+        הפלטפורמה המובילה למציאת נכסים למכירה, השכרה ונופש בכל רחבי הארץ.
+        אלפי נכסים מאומתים ושירות מקצועי.
+      </p>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="pi pi-facebook"></i></a>
+        <a href="#" class="social-link"><i class="pi pi-twitter"></i></a>
+        <a href="#" class="social-link"><i class="pi pi-instagram"></i></a>
+        <a href="#" class="social-link"><i class="pi pi-linkedin"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="section-title">קישורים מהירים</h4>
+      <ul class="footer-links">
+        <li><a routerLink="/" class="footer-link"><i class="pi pi-angle-left"></i>דף הבית</a></li>
+        <li><a routerLink="/products" class="footer-link"><i class="pi pi-angle-left"></i>כל הנכסים</a></li>
+        <li><a routerLink="/blog" class="footer-link"><i class="pi pi-angle-left"></i>בלוג</a></li>
+        <li><a routerLink="/add-product" class="footer-link"><i class="pi pi-angle-left"></i>פרסם נכס</a></li>
+        <li><a routerLink="/contact" class="footer-link"><i class="pi pi-angle-left"></i>צור קשר</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="section-title">סוגי נכסים</h4>
+      <ul class="footer-links">
+        <li *ngIf="categories.length === 0">
+          <a class="footer-link"><i class="pi pi-angle-left"></i>טוען קטגוריות...</a>
+        </li>
+        <li *ngFor="let category of categories">
+          <a (click)="navigateToCategory(category.categoryId)" class="footer-link" style="cursor: pointer;">
+            <i class="pi pi-angle-left"></i>{{ category.categoryName }}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="section-title">צור קשר</h4>
+      <ul class="footer-contact">
+        <li><i class="pi pi-phone"></i>03-1234567</li>
+        <li><i class="pi pi-envelope"></i>info@realestate.co.il</li>
+        <li><i class="pi pi-map-marker"></i>תל אביב, ישראל</li>
+        <li><i class="pi pi-clock"></i>א'-ה': 9:00-18:00</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {{ currentYear }} RealEstate. כל הזכויות שמורות.</p>
+    <div class="footer-bottom-links">
+      <a class="bottom-link">תנאי שימוש</a>
+      <span class="separator">|</span>
+      <a class="bottom-link">מדיניות פרטיות</a>
+      <span class="separator">|</span>
+      <a class="bottom-link">הצהרת נגישות</a>
+    </div>
+  </div>
+</footer>

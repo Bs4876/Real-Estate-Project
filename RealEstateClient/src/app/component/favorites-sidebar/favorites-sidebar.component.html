@@ -1,0 +1,99 @@
+<p-drawer [(visible)]="visible" position="left" [style]="{width: '400px'}" (onHide)="closeSidebar()">
+  <ng-template pTemplate="header">
+    <h3 class="m-0 flex align-items-center gap-3">
+      <i class="pi pi-heart"></i>
+      <span>המועדפים שלי ({{ favoriteItems.length }})</span>
+    </h3>
+  </ng-template>
+
+  <div *ngIf="favoriteItems.length === 0" class="empty-state text-center p-5">
+    <i class="pi pi-heart text-6xl text-400 mb-3"></i>
+    <p class="text-600">אין מועדפים</p>
+  </div>
+
+  <div *ngIf="favoriteItems.length > 0" class="favorites-container">
+    <div *ngFor="let item of favoriteItems; let i = index" 
+         class="favorite-item mb-3 p-3 border-1 border-200 border-round">
+      <div class="flex gap-3">
+        <img [src]="getFullImageUrl(item.imageUrl)" [alt]="item.title" 
+             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" 
+             class="border-round favorite-image"
+             (click)="viewDetails(item.productId)">
+        
+        <div class="flex-grow-1">
+          <h4 class="m-0 mb-1 text-sm cursor-pointer favorite-title" (click)="viewDetails(item.productId)">{{ item.title }}</h4>
+          <p class="text-xs text-600 m-0 mb-1 flex align-items-center gap-2">
+            <i class="pi pi-map-marker"></i>
+            <span>{{ item.city }}</span>
+          </p>
+          <p class="text-xs text-600 m-0 mb-1">
+            <span class="p-tag p-tag-sm" [ngClass]="{
+              'p-tag-info': item.TransactionType === 'Sale',
+              'p-tag-success': item.TransactionType === 'Rent',
+              'p-tag-warning': item.TransactionType === 'Vacation'
+            }">{{ getTransactionTypeLabel(item.TransactionType) }}</span>
+          </p>
+          <div class="mb-1 rating-stars flex align-items-center gap-2" *ngIf="item.rating">
+            <span *ngFor="let star of [1,2,3,4,5]" 
+                  [style.color]="star <= item.rating ? '#fbbf24' : '#d1d5db'"
+                  style="font-size: 0.9rem;">★</span>
+            <button pButton icon="pi pi-pencil" 
+                    class="p-button-text p-button-sm"
+                    style="padding: 0.25rem; height: auto;"
+                    (click)="editRating(item)"
+                    pTooltip="עדכן דירוג"></button>
+          </div>
+          <p class="text-primary font-bold m-0 mb-2">₪{{ item.price | number }}</p>
+          
+          <div class="flex gap-1 action-buttons">
+            <button pButton icon="pi pi-phone" 
+                    class="p-button-sm p-button-success"
+                    (click)="contactOwner(item)"
+                    pTooltip="יצירת קשר"></button>
+            <button pButton icon="pi pi-trash" 
+                    class="p-button-sm p-button-danger p-button-text delete-btn"
+                    (click)="removeItem(item.productId)"
+                    pTooltip="הסר"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-top-1 border-200 pt-3 mt-3 footer-actions">
+      <button pButton label="עבור למועדפים המלאים" icon="pi pi-heart" 
+              iconPos="right"
+              class="w-full mb-2 action-btn" (click)="goToFavorites()"></button>
+      
+      <button pButton label="המשך לקניות" icon="pi pi-arrow-left" 
+              iconPos="right"
+              class="w-full p-button-outlined action-btn" (click)="goToProducts()"></button>
+    </div>
+  </div>
+</p-drawer>
+
+<p-dialog [(visible)]="showEditRatingDialog" [modal]="true" [style]="{width: '400px'}" header="עדכן דירוג" class="edit-rating-dialog">
+  <div class="text-center p-4">
+    <h3 class="mb-3">עדכן את הדירוג של {{ editingProduct?.title }}</h3>
+    <div class="flex justify-content-center gap-2 mb-4 star-rating">
+      <i *ngFor="let star of [1,2,3,4,5]" 
+         class="pi pi-star-fill cursor-pointer"
+         [style.color]="star <= (hoverRating || selectedRating) ? '#fbbf24' : '#d1d5db'"
+         [style.font-size]="'3rem'"
+         (click)="setRating(star)"
+         (mouseenter)="setHoverRating(star)"
+         (mouseleave)="setHoverRating(0)"></i>
+    </div>
+    <p class="text-600" *ngIf="selectedRating > 0">דירוג חדש: {{ selectedRating }} כוכבים</p>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            iconPos="right"
+            (click)="showEditRatingDialog=false" class="p-button-text"></button>
+    <button pButton label="שמור" icon="pi pi-check" 
+            iconPos="right"
+            (click)="saveRating()" 
+            [disabled]="selectedRating === 0"
+            class="p-button-success"></button>
+  </ng-template>
+</p-dialog>

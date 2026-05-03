@@ -1,0 +1,309 @@
+// Edit Product Component Styles
+
+.container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+::ng-deep {
+  .p-card {
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    border: 2px solid transparent;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+      background-size: 200% 100%;
+      animation: gradientShift 3s ease infinite;
+    }
+    
+    &:hover {
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.25);
+      border-color: rgba(102, 126, 234, 0.2);
+    }
+    
+    .p-card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border-radius: 14px 14px 0 0;
+      animation: slideInDown 0.5s ease-out;
+    }
+    
+    .p-card-body {
+      padding: 2rem;
+    }
+  }
+  
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .grid > div {
+    animation: fadeInScale 0.5s ease-out backwards;
+    
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.15s; }
+    &:nth-child(3) { animation-delay: 0.2s; }
+    &:nth-child(4) { animation-delay: 0.25s; }
+    &:nth-child(5) { animation-delay: 0.3s; }
+    &:nth-child(6) { animation-delay: 0.35s; }
+    &:nth-child(7) { animation-delay: 0.4s; }
+    &:nth-child(8) { animation-delay: 0.45s; }
+    &:nth-child(9) { animation-delay: 0.5s; }
+  }
+  
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  label {
+    color: #4b5563;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: #667eea;
+    }
+  }
+  
+  .p-inputtext, .p-inputnumber, .p-select, textarea {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: #c7d2fe;
+    }
+    
+    &:focus, &:focus-within {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+  
+  .p-select {
+    z-index: 1000 !important;
+  }
+  
+  .p-select-overlay {
+    z-index: 1001 !important;
+  }
+  
+  .p-select-option:focus,
+  .p-select-option.p-focus {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+  }
+  
+  .p-select-option:hover {
+    background: #e5e7eb !important;
+    color: #1f2937 !important;
+  }
+  
+  .p-select-option.p-selected {
+    background: #d1d5db !important;
+    color: #111827 !important;
+  }
+  
+  .p-inputnumber-input {
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  .p-button {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    &:not(.p-button-outlined):not(.p-button-secondary):not(.p-button-danger) {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      
+      &:hover {
+        background: linear-gradient(135deg, #5568d3, #6a3f8f);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+    
+    &.p-button-outlined {
+      border: 2px solid #667eea;
+      color: #667eea;
+      background: transparent;
+      
+      &:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border-color: #764ba2;
+        color: #764ba2;
+        transform: translateY(-2px);
+      }
+    }
+    
+    &.p-button-secondary {
+      background: #ffffff;
+      border: 2px solid #ef4444;
+      color: #ef4444;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+      
+      &:hover {
+        background: #ef4444;
+        color: #ffffff;
+        border-color: #ef4444;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+    }
+    
+    &.p-button-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border: none;
+      
+      &:hover {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        transform: scale(1.05);
+      }
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+  }
+  
+  .surface-100 {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+    border: 2px solid #e0e7ff;
+    animation: fadeIn 0.5s ease-out;
+    
+    h4 {
+      color: #667eea;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      &::before {
+        content: '';
+        width: 4px;
+        height: 1.5rem;
+        background: linear-gradient(180deg, #667eea, #764ba2);
+        border-radius: 2px;
+      }
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  img {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  .relative {
+    position: relative;
+    animation: zoomIn 0.4s ease-out;
+    
+    &:hover {
+      .p-button-danger {
+        transform: scale(1.1) rotate(90deg);
+      }
+    }
+  }
+  
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .p-button-rounded {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.1) rotate(90deg);
+    }
+  }
+  
+  input[type="file"] {
+    display: none;
+  }
+  
+  .flex.gap-2 {
+    .p-button {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+}

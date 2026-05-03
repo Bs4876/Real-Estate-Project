@@ -1,0 +1,103 @@
+<p-toast></p-toast>
+
+<div class="auth-container">
+    <p-card [header]="isLoginMode ? 'כניסת משתמש' : 'הרשמה למערכת'" [style]="{ width: '450px' }">
+        <form #authForm="ngForm" (ngSubmit)="onSubmit()">
+
+            <div class="field">
+                <label for="email">אימייל</label>
+                
+                <ng-container *ngIf="isLoginMode">
+                    <input pInputText name="loginEmail" type="email"
+                           [(ngModel)]="loginData.email" required email #emailLog="ngModel"
+                           class="w-full" placeholder="הכנס אימייל" />
+                    <small class="p-error block mt-1" *ngIf="emailLog.invalid && emailLog.touched">
+                        נא להזין כתובת אימייל תקינה.
+                    </small>
+                </ng-container>
+
+                <ng-container *ngIf="!isLoginMode">
+                    <input pInputText name="regEmail" type="email"
+                           [(ngModel)]="registerData.email" required email #emailReg="ngModel"
+                           class="w-full" placeholder="בחר אימייל להרשמה" />
+                    <small class="p-error block mt-1" *ngIf="emailReg.invalid && emailReg.touched">
+                        נא להזין כתובת אימייל תקינה.
+                    </small>
+                </ng-container>
+            </div>
+
+            <div class="field">
+                <label for="password">סיסמה</label>
+                
+                <div *ngIf="isLoginMode">
+                    <p-password name="loginPassword" [(ngModel)]="loginData.password" 
+                                [feedback]="false" [toggleMask]="true" styleClass="w-full"
+                                inputStyleClass="w-full" required placeholder="הכנס סיסמה">
+                    </p-password>
+                </div>
+
+                <div *ngIf="!isLoginMode">
+                    <p-password name="regPassword" [(ngModel)]="registerData.password" 
+                                [feedback]="false" [toggleMask]="true" styleClass="w-full"
+                                inputStyleClass="w-full" required #passReg="ngModel"
+                                (ngModelChange)="onPasswordChange()"
+                                placeholder="בחר סיסמה חזקה">
+                    </p-password>
+                    
+                    <div *ngIf="registerData.password.length > 0" class="password-strength-container mt-2">
+                      <div class="password-strength-bar">
+                        <div class="password-strength-fill" 
+                             [style.width.%]="(passwordStrength / 5) * 100"
+                             [style.background-color]="passwordStrengthColor"></div>
+                      </div>
+                      <div class="flex justify-content-between align-items-center mt-1">
+                        <small [style.color]="passwordStrengthColor" class="font-semibold">
+                          חוזק סיסמה: {{ passwordStrengthText }}
+                        </small>
+                        <small class="text-600">
+                          {{ passwordStrength }}/5
+                        </small>
+                      </div>
+                    </div>
+                    
+                    <small class="p-error block mt-1" *ngIf="passReg.invalid && passReg.touched && registerData.password.length < 8">
+                        הסיסמה חייבת להכיל לפחות 8 תווים.
+                    </small>
+                </div>
+            </div>
+
+            <div *ngIf="!isLoginMode" class="registration-fields">
+                <div class="field">
+                    <label for="fullName">שם מלא</label>
+                    <input pInputText name="fullName" [(ngModel)]="registerData.fullName" 
+                           required #nameModel="ngModel" class="w-full" placeholder="ישראל ישראלי" />
+                </div>
+
+                <div class="field">
+                    <label for="phone">טלפון</label>
+                    <input pInputText name="phone" [(ngModel)]="registerData.phone" 
+                           required pattern="^[0-9-]*$" #phoneModel="ngModel" 
+                           class="w-full" placeholder="050-0000000" />
+                </div>
+
+                <div class="field">
+                    <label for="address">כתובת</label>
+                    <input pInputText name="address" [(ngModel)]="registerData.address" 
+                           required class="w-full" placeholder="רחוב, עיר" />
+                </div>
+            </div>
+
+            <div class="actions mt-4">
+                <p-button [label]="isLoginMode ? 'התחברות' : 'צור חשבון חדש'" 
+                    type="submit" 
+                    [disabled]="authForm.invalid || (!isLoginMode && registerData.password.length < 8)"
+                    styleClass="p-button-primary w-full mb-2">
+                </p-button>
+
+                <p-button [label]="isLoginMode ? 'עדיין אין לך חשבון? הירשם כאן' : 'כבר יש לך חשבון? התחבר כאן'"
+                    (onClick)="toggleMode()" styleClass="w-full p-button-text" type="button">
+                </p-button>
+            </div>
+        </form>
+    </p-card>
+</div>

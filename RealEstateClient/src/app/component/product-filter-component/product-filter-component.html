@@ -1,0 +1,48 @@
+<div class="card p-4 shadow-1 border-round">
+    <h5 class="text-xl font-bold mb-4">סינון מוצרים</h5>
+    <div class="flex flex-column gap-3">
+        <div>
+            <label class="block text-sm font-semibold mb-2">קטגוריות</label>
+            <p-multiSelect [options]="categories" [(ngModel)]="filterData.categoryIds" 
+                          optionLabel="categoryName" optionValue="categoryId" 
+                          placeholder="בחר קטגוריות" class="w-full" 
+                          [showClear]="true" display="chip"></p-multiSelect>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">עיר</label>
+            <input pInputText [(ngModel)]="filterData.city" placeholder="הזן שם עיר" class="w-full" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">טווח מחירים</label>
+            <div class="grid">
+                <div class="col-6">
+                    <p-inputNumber [(ngModel)]="filterData.minPrice" placeholder="מינימום" 
+                                   [min]="0" mode="currency" currency="ILS" locale="he-IL" class="w-full"></p-inputNumber>
+                </div>
+                <div class="col-6">
+                    <p-inputNumber [(ngModel)]="filterData.maxPrice" placeholder="מקסימום" 
+                                   [min]="0" mode="currency" currency="ILS" locale="he-IL" class="w-full"></p-inputNumber>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">מספר חדרים</label>
+            <p-inputNumber [(ngModel)]="filterData.rooms" placeholder="בחר מספר חדרים" 
+                           [showButtons]="true" [min]="0" class="w-full"></p-inputNumber>
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold mb-2">מספר מיטות</label>
+            <p-inputNumber [(ngModel)]="filterData.beds" placeholder="בחר מספר מיטות" 
+                           [showButtons]="true" [min]="0" class="w-full"></p-inputNumber>
+        </div>
+
+        <div class="flex gap-2 mt-3">
+            <p-button label="סנן" icon="pi pi-search" (onClick)="search()" class="flex-grow-1"></p-button>
+            <p-button label="נקה" icon="pi pi-times" [outlined]="true" (onClick)="clear()"></p-button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,641 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="container p-5" *ngIf="currentUser">
+  <div class="mb-4 profile-header-main">
+    <h1 class="text-3xl font-bold">שלום, {{ currentUser.fullName }}</h1>
+    <p class="header-subtitle">ברוך הבא לאיזור האישי שלך</p>
+  </div>
+
+  <div class="tabs-container">
+    <div class="tabs-header flex gap-2 mb-4 border-bottom-1 border-200">
+      <button class="tab-button" [class.active]="activeTab === 0" (click)="setActiveTab(0)">
+        <i class="pi pi-user"></i> עדכון פרטים
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 1" (click)="setActiveTab(1)">
+        <i class="pi pi-shopping-bag"></i> ההזמנות שלי
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 2" (click)="setActiveTab(2)">
+        <i class="pi pi-box"></i> המוצרים שלי
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 3" (click)="setActiveTab(3)">
+        <i class="pi pi-shopping-cart"></i> הסל שלי
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 5" (click)="setActiveTab(5)">
+        <i class="pi pi-send"></i> הפניות שלי
+      </button>
+      <button *ngIf="!isAdmin()" class="tab-button" [class.active]="activeTab === 6" (click)="setActiveTab(6)">
+        <i class="pi pi-inbox"></i> פניות אלי
+      </button>
+      <button *ngIf="isAdmin()" class="tab-button" [class.active]="activeTab === 7" (click)="setActiveTab(7)">
+        <i class="pi pi-shield"></i> ניהול מערכת
+      </button>
+      <button class="tab-button" [class.active]="activeTab === 4" (click)="setActiveTab(4)">
+        <i class="pi pi-sign-out"></i> התנתקות
+      </button>
+    </div>
+
+    <div class="tab-content">
+      <div *ngIf="activeTab === 0" class="card p-4">
+        <div class="profile-header mb-4">
+          <i class="pi pi-user-edit" style="font-size: 3rem; color: var(--primary-color);"></i>
+          <div>
+            <h3 class="m-0">עדכון פרטי משתמש</h3>
+            <p class="text-600 m-0">עדכן את הפרטים האישיים שלך</p>
+          </div>
+        </div>
+        
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="block mb-2 font-semibold">
+                <i class="pi pi-user mr-2"></i>שם מלא *
+              </label>
+              <input pInputText [(ngModel)]="userForm.fullName" class="w-full" required placeholder="השם המלא שלך" />
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="block mb-2 font-semibold">
+                <i class="pi pi-phone mr-2"></i>טלפון *
+              </label>
+              <input pInputText [(ngModel)]="userForm.phone" class="w-full" required placeholder="050-0000000" />
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="field">
+              <label class="block mb-2 font-semibold">
+                <i class="pi pi-map-marker mr-2"></i>כתובת *
+              </label>
+              <input pInputText [(ngModel)]="userForm.address" class="w-full" required placeholder="רחוב, עיר" />
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="surface-100 border-round p-3 mb-3">
+              <p class="text-sm text-600 m-0">
+                <i class="pi pi-info-circle mr-2"></i>
+                אימייל הוא אופציונלי - מלא רק אם אתה רוצה לשנות אותו
+              </p>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="block mb-2 font-semibold">
+                <i class="pi pi-envelope mr-2"></i>אימייל (אופציונלי)
+              </label>
+              <input pInputText type="email" [(ngModel)]="userForm.email" 
+                     #emailInput="ngModel" email
+                     class="w-full" placeholder="השאר ריק ללא שינוי" />
+              <small class="text-red-500" *ngIf="emailInput.invalid && emailInput.touched && userForm.email">
+                נא להזין כתובת אימייל תקינה
+              </small>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label class="block mb-2 font-semibold">
+                <i class="pi pi-lock mr-2"></i>סיסמה
+              </label>
+              <p-button label="החלפת סיסמה" icon="pi pi-key" 
+                        (onClick)="openPasswordDialog()" 
+                        styleClass="w-full p-button-outlined"></p-button>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <p-button label="שמור שינויים" icon="pi pi-check" 
+                      (onClick)="updateProfile()" class="w-full" 
+                      styleClass="p-button-lg"></p-button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 1" class="card p-4">
+        <h3 class="mb-4"><i class="pi pi-shopping-bag mr-2"></i>ההזמנות שלי ({{ orders.length }})</h3>
+        
+        <div *ngIf="orders.length === 0" class="text-center p-5">
+          <i class="pi pi-inbox text-6xl text-400 mb-3"></i>
+          <p class="text-600 mb-3">אין לך הזמנות עדיין</p>
+          <p-button label="התחל לקנות" icon="pi pi-shopping-cart" 
+                    routerLink="/products"></p-button>
+        </div>
+        
+        <div *ngFor="let order of orders" class="order-card mb-3">
+          <div class="border-1 border-200 border-round overflow-hidden hover:shadow-3 transition-all transition-duration-300">
+            <div class="p-4 order-header border-bottom-1 border-200">
+              <div class="flex justify-content-between align-items-center">
+                <div>
+                  <h4 class="m-0 mb-2">
+                    <i class="pi pi-hashtag"></i>
+                    הזמנה {{ order.orderId }}
+                  </h4>
+                  <p class="text-600 text-sm m-0">
+                    <i class="pi pi-calendar mr-1"></i>
+                    {{ order.orderDate | date:'dd/MM/yyyy HH:mm' }}
+                  </p>
+                </div>
+                <div class="text-left">
+                  <p-tag [value]="getStatusLabel(order.status)" 
+                         [severity]="getStatusSeverity(order.status)"
+                         styleClass="text-lg"></p-tag>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-4">
+              <div class="order-stepper mb-4">
+                <div class="stepper-container-centered">
+                  <div class="stepper-step" [class.completed]="isStepCompleted(order.status, 'Pending')" [class.active]="order.status === 'Pending'">
+                    <div class="step-circle">
+                      <i class="pi" [ngClass]="isStepCompleted(order.status, 'Pending') ? 'pi-check' : 'pi-inbox'"></i>
+                    </div>
+                    <div class="step-label">התקבל</div>
+                  </div>
+                  <div class="stepper-line" [class.completed]="isStepCompleted(order.status, 'Confirmed')"></div>
+                  <div class="stepper-step" [class.completed]="isStepCompleted(order.status, 'Confirmed')" [class.active]="order.status === 'Confirmed'">
+                    <div class="step-circle">
+                      <i class="pi" [ngClass]="isStepCompleted(order.status, 'Confirmed') ? 'pi-check' : 'pi-check-circle'"></i>
+                    </div>
+                    <div class="step-label">אושר</div>
+                  </div>
+                  <div class="stepper-line" [class.completed]="isStepCompleted(order.status, 'Processing')"></div>
+                  <div class="stepper-step" [class.completed]="isStepCompleted(order.status, 'Processing')" [class.active]="order.status === 'Processing'">
+                    <div class="step-circle">
+                      <i class="pi" [ngClass]="isStepCompleted(order.status, 'Processing') ? 'pi-check' : 'pi-sync'"></i>
+                    </div>
+                    <div class="step-label">בטיפול</div>
+                  </div>
+                  <div class="stepper-line" [class.completed]="order.status === 'Delivered'"></div>
+                  <div class="stepper-step" [class.completed]="order.status === 'Delivered'" [class.active]="order.status === 'Delivered'">
+                    <div class="step-circle">
+                      <i class="pi" [ngClass]="order.status === 'Delivered' ? 'pi-check' : 'pi-flag'"></i>
+                    </div>
+                    <div class="step-label">הסתיים</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <p class="text-600 text-sm mb-2">
+                  <i class="pi pi-box mr-1"></i>
+                  פריטים בהזמנה: {{ order.orderItems?.length || 0 }}
+                </p>
+                
+                <div class="grid" *ngIf="order.orderItems && order.orderItems.length > 0">
+                  <div class="col-12" *ngFor="let item of order.orderItems.slice(0, 2)">
+                    <div class="flex align-items-center gap-3 p-2 bg-gray-50 border-round">
+                      <img *ngIf="item.product?.imageUrl" 
+                           [src]="getFullImageUrl(item.product.imageUrl)" 
+                           [alt]="item.product?.title"
+                           style="width: 60px; height: 60px; object-fit: cover;"
+                           class="border-round" />
+                      <div class="flex-grow-1">
+                        <p class="font-semibold m-0 mb-1">{{ item.product?.title || 'מוצר' }}</p>
+                        <p class="text-sm text-600 m-0">
+                          <i class="pi pi-map-marker mr-1"></i>{{ item.product?.city || 'N/A' }}
+                        </p>
+                        <p class="text-sm text-600 m-0" *ngIf="item.startDate">
+                          <i class="pi pi-calendar mr-1"></i>
+                          {{ item.startDate | date:'dd/MM/yy' }}<span *ngIf="item.endDate"> - {{ item.endDate | date:'dd/MM/yy' }}</span>
+                        </p>
+                      </div>
+                      <div class="text-left">
+                        <p class="font-bold text-primary m-0">₪{{ item.priceAtPurchase | number }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-12" *ngIf="order.orderItems.length > 2">
+                    <p class="text-center text-600 text-sm m-0">
+                      +{{ order.orderItems.length - 2 }} פריטים נוספים
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="border-top-1 border-200 pt-3 mt-3">
+                <div class="flex justify-content-between align-items-center">
+                  <span class="text-xl font-bold">סה"כ:</span>
+                  <span class="text-2xl font-bold text-primary">₪{{ order.totalAmount | number }}</span>
+                </div>
+              </div>
+              
+              <div class="mt-3">
+                <p-button label="צפה בפרטים" icon="pi pi-eye" 
+                          (onClick)="viewOrderDetails(order)"
+                          styleClass="w-full"></p-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 2" class="card p-4">
+        <div class="flex justify-content-between align-items-center mb-4">
+          <div>
+            <h3 class="m-0">המוצרים שלי</h3>
+            <p class="text-600 m-0">נהל את המוצרים שפרסמת ({{ myProducts.length }})</p>
+          </div>
+          <p-button label="הוסף מוצר חדש" icon="pi pi-plus" 
+                    (onClick)="addNewProduct()" 
+                    styleClass="p-button-success"></p-button>
+        </div>
+        
+        <div *ngIf="isLoadingProducts" class="text-center p-5">
+          <i class="pi pi-spin pi-spinner text-primary" style="font-size: 3rem;"></i>
+          <p class="text-600 mt-3">טוען מוצרים...</p>
+        </div>
+        
+        <div *ngIf="!isLoadingProducts && myProducts.length === 0" class="text-center p-5">
+          <i class="pi pi-box text-6xl text-400 mb-3"></i>
+          <p class="text-600 mb-3">לא פרסמת מוצרים עדיין</p>
+          <p-button label="פרסם מוצר ראשון" icon="pi pi-plus" 
+                    (onClick)="addNewProduct()" 
+                    styleClass="p-button-success"></p-button>
+        </div>
+        
+        
+        <div *ngIf="!isLoadingProducts" class="products-list">
+          <div *ngFor="let product of myProducts" class="product-row mb-3">
+          <div class="flex align-items-center gap-3 p-3 border-1 border-200 border-round hover:shadow-2 transition-all transition-duration-300">
+            <img [src]="product.imageUrl" [alt]="product.title" 
+                 class="product-thumbnail border-round" />
+            
+            <div class="flex-grow-1">
+              <h4 class="m-0 mb-1 text-900">{{ product.title }}</h4>
+              <div class="flex align-items-center gap-3 text-600 text-sm">
+                <span class="flex align-items-center gap-1"><i class="pi pi-map-marker"></i>{{ product.city }}</span>
+                <span *ngIf="product.rooms" class="flex align-items-center gap-1"><i class="pi pi-home"></i>{{ product.rooms }} חדרים</span>
+                <span *ngIf="product.beds" class="flex align-items-center gap-1"><i class="pi pi-moon"></i>{{ product.beds }} מיטות</span>
+                <span class="p-tag" [ngClass]="{
+                  'p-tag-info': product.transactionType === 'Sale',
+                  'p-tag-success': product.transactionType === 'Rent',
+                  'p-tag-warning': product.transactionType === 'Vacation'
+                }">
+                  {{ product.transactionType === 'Sale' ? 'מכירה' : 
+                     product.transactionType === 'Rent' ? 'השכרה' : 'נופש' }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="text-left">
+              <p class="text-2xl font-bold text-primary m-0">₪{{ product.price | number }}</p>
+            </div>
+            
+            <div class="flex gap-2">
+              <p-button icon="pi pi-pencil" 
+                        (onClick)="editProduct(product.productId)" 
+                        styleClass="p-button-rounded p-button-warning"
+                        pTooltip="עריכה"></p-button>
+              <p-button icon="pi pi-trash" 
+                        (onClick)="deleteProduct(product.productId)" 
+                        styleClass="p-button-rounded p-button-danger"
+                        pTooltip="מחיקה"></p-button>
+              <p-button icon="pi pi-eye" 
+                        (onClick)="viewProduct(product.productId)" 
+                        styleClass="p-button-rounded p-button-info"
+                        pTooltip="צפייה"></p-button>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 3" class="card p-4">
+        <h3 class="mb-4">הסל שלי</h3>
+        <p class="text-600 mb-3">כאן יוצגו המוצרים שהוספת לסל</p>
+        <p-button label="עבור לסל" icon="pi pi-shopping-cart" (onClick)="goToCart()"></p-button>
+      </div>
+
+      <div *ngIf="activeTab === 4" class="card p-4 text-center">
+        <i class="pi pi-sign-out text-6xl text-400 mb-3"></i>
+        <h3 class="mb-3">האם אתה בטוח שברצונך להתנתק?</h3>
+        <div class="flex gap-2 justify-content-center">
+          <p-button label="ביטול" icon="pi pi-times" (onClick)="setActiveTab(0)" styleClass="p-button-text"></p-button>
+          <p-button label="התנתק" icon="pi pi-sign-out" severity="danger" (onClick)="confirmLogout()"></p-button>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 5" class="card p-4">
+        <h3 class="mb-4"><i class="pi pi-send mr-2"></i>הפניות שלי ({{ myInquiries.length }})</h3>
+        
+        <div *ngIf="myInquiries.length === 0" class="text-center p-5">
+          <i class="pi pi-inbox text-6xl text-400 mb-3"></i>
+          <p class="text-600 mb-3">לא שלחת פניות עדיין</p>
+        </div>
+        
+        <div *ngFor="let inquiry of myInquiries" class="mb-3">
+          <div class="border-1 border-200 border-round p-3 hover:shadow-2 transition-all">
+            <div class="flex justify-content-between align-items-start mb-2">
+              <div>
+                <h4 class="m-0 mb-1">נכס: {{ inquiry.productTitle }}</h4>
+                <p class="text-600 text-sm m-0">בעל הנכס: {{ inquiry.ownerName }}</p>
+              </div>
+              <p-tag [value]="getInquiryStatusLabel(inquiry.status)" 
+                     [severity]="getInquiryStatusSeverity(inquiry.status)"></p-tag>
+            </div>
+            <p class="text-sm text-600 m-0 mb-2">
+              <i class="pi pi-calendar mr-1"></i>{{ inquiry.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+            <div class="flex gap-2">
+              <p-button label="צפה בפרטים" icon="pi pi-eye" 
+                        (onClick)="viewInquiryDetails(inquiry)" 
+                        styleClass="p-button-sm"></p-button>
+              <p-button label="צפה בנכס" icon="pi pi-home" 
+                        (onClick)="viewInquiryProduct(inquiry.productId)" 
+                        styleClass="p-button-sm p-button-outlined"></p-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 6" class="card p-4">
+        <h3 class="mb-4"><i class="pi pi-inbox mr-2"></i>פניות אלי ({{ inquiriesToMe.length }})</h3>
+        
+        <div *ngIf="inquiriesToMe.length === 0" class="text-center p-5">
+          <i class="pi pi-inbox text-6xl text-400 mb-3"></i>
+          <p class="text-600 mb-3">אין פניות אליך עדיין</p>
+        </div>
+        
+        <div *ngFor="let inquiry of inquiriesToMe" class="mb-3">
+          <div class="border-1 border-200 border-round p-3 hover:shadow-2 transition-all">
+            <div class="flex justify-content-between align-items-start mb-2">
+              <div>
+                <h4 class="m-0 mb-1">נכס: {{ inquiry.productTitle }}</h4>
+                <p class="text-600 text-sm m-0">מאת: {{ inquiry.userName }}</p>
+              </div>
+              <p-tag [value]="getInquiryStatusLabel(inquiry.status)" 
+                     [severity]="getInquiryStatusSeverity(inquiry.status)"></p-tag>
+            </div>
+            <p class="text-sm text-600 m-0 mb-2">
+              <i class="pi pi-calendar mr-1"></i>{{ inquiry.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+            <div class="mb-3 p-2 bg-blue-50 border-round">
+              <p class="text-xs text-600 mb-2 font-semibold">
+                <i class="pi pi-sync mr-1"></i>עדכן סטטוס:
+              </p>
+              <div class="flex gap-2 flex-wrap">
+                <button pButton label="חדש" icon="pi pi-info-circle" 
+                        (click)="updateInquiryStatus(inquiry.inquiryId, 'New')" 
+                        [disabled]="inquiry.status === 'New'"
+                        class="p-button-sm p-button-info"></button>
+                <button pButton label="בטיפול" icon="pi pi-sync" 
+                        (click)="updateInquiryStatus(inquiry.inquiryId, 'InProgress')" 
+                        [disabled]="inquiry.status === 'InProgress'"
+                        class="p-button-sm p-button-warning"></button>
+                <button pButton label="טופל" icon="pi pi-check" 
+                        (click)="updateInquiryStatus(inquiry.inquiryId, 'Resolved')" 
+                        [disabled]="inquiry.status === 'Resolved'"
+                        class="p-button-sm p-button-success"></button>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <p-button label="צפה בפרטים" icon="pi pi-eye" 
+                        (onClick)="viewInquiryDetails(inquiry)" 
+                        styleClass="p-button-sm p-button-outlined"></p-button>
+              <p-button label="צפה בנכס" icon="pi pi-home" 
+                        (onClick)="viewInquiryProduct(inquiry.productId)" 
+                        styleClass="p-button-sm p-button-outlined"></p-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 7" class="card p-4 text-center">
+        <i class="pi pi-shield text-6xl text-primary mb-3"></i>
+        <h3 class="mb-3">ניהול מערכת</h3>
+        <p class="text-600 mb-3">עבור למסך ניהול המערכת המלא</p>
+        <p-button label="עבור לניהול מערכת" icon="pi pi-shield" (onClick)="goToAdmin()"></p-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="showPasswordDialog" [modal]="true" [style]="{width: '450px'}">
+  <ng-template pTemplate="header">
+    <h3>
+      <i class="pi pi-key mr-2"></i>
+      החלפת סיסמה
+    </h3>
+  </ng-template>
+  
+  <div class="p-4">
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">
+        <i class="pi pi-lock mr-2"></i>סיסמה נוכחית
+      </label>
+      <input pInputText type="password" [(ngModel)]="passwordChangeForm.oldPassword" 
+             class="w-full" placeholder="הזן את הסיסמה הנוכחית" />
+    </div>
+    
+    <div class="field">
+      <label class="block mb-2 font-semibold">
+        <i class="pi pi-lock mr-2"></i>סיסמה חדשה
+      </label>
+      <input pInputText type="password" [(ngModel)]="passwordChangeForm.newPassword" 
+             class="w-full" placeholder="הזן סיסמה חדשה (לפחות 8 תווים)" />
+      <small class="text-600 block mt-1">
+        <i class="pi pi-info-circle mr-1"></i>הסיסמה חייבת להכיל לפחות 8 תווים
+      </small>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            (click)="cancelPasswordChange()" class="p-button-text"></button>
+    <button pButton label="שנה סיסמה" icon="pi pi-check" 
+            (click)="changePassword()" class="p-button-success"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showInquiryDialog" [modal]="true" [style]="{width: '600px'}" *ngIf="selectedInquiry">
+  <ng-template pTemplate="header">
+    <h3><i class="pi pi-envelope mr-2"></i>פרטי פנייה</h3>
+  </ng-template>
+  
+  <div class="p-4">
+    <div class="mb-3 p-3 bg-blue-50 border-round">
+      <p class="font-bold m-0 mb-1">נכס: {{ selectedInquiry.productTitle }}</p>
+      <p class="text-sm text-600 m-0">מאת: {{ selectedInquiry.userName }}</p>
+    </div>
+    
+    <div class="grid">
+      <div class="col-6">
+        <p class="text-600 text-sm mb-1">שם</p>
+        <p class="font-bold m-0">{{ selectedInquiry.name }}</p>
+      </div>
+      <div class="col-6">
+        <p class="text-600 text-sm mb-1">טלפון</p>
+        <p class="font-bold m-0">{{ selectedInquiry.phone }}</p>
+      </div>
+      <div class="col-12">
+        <p class="text-600 text-sm mb-1">אימייל</p>
+        <p class="font-bold m-0">{{ selectedInquiry.email }}</p>
+      </div>
+      <div class="col-12">
+        <p class="text-600 text-sm mb-1">הודעה</p>
+        <p class="m-0">{{ selectedInquiry.message || 'אין הודעה' }}</p>
+      </div>
+      <div class="col-6">
+        <p class="text-600 text-sm mb-1">תאריך</p>
+        <p class="m-0">{{ selectedInquiry.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+      <div class="col-6">
+        <p class="text-600 text-sm mb-1">סטטוס</p>
+        <p-tag [value]="getInquiryStatusLabel(selectedInquiry.status)" 
+               [severity]="getInquiryStatusSeverity(selectedInquiry.status)"></p-tag>
+      </div>
+      <div class="col-12" *ngIf="activeTab === 6">
+        <p class="text-600 text-sm mb-2">עדכן סטטוס</p>
+        <div class="flex gap-2">
+          <button pButton label="חדש" icon="pi pi-info-circle" 
+                  (click)="updateInquiryStatus(selectedInquiry.inquiryId, 'New')" 
+                  [disabled]="selectedInquiry.status === 'New'"
+                  class="p-button-sm p-button-info"></button>
+          <button pButton label="בטיפול" icon="pi pi-sync" 
+                  (click)="updateInquiryStatus(selectedInquiry.inquiryId, 'InProgress')" 
+                  [disabled]="selectedInquiry.status === 'InProgress'"
+                  class="p-button-sm p-button-warning"></button>
+          <button pButton label="טופל" icon="pi pi-check" 
+                  (click)="updateInquiryStatus(selectedInquiry.inquiryId, 'Resolved')" 
+                  [disabled]="selectedInquiry.status === 'Resolved'"
+                  class="p-button-sm p-button-success"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="סגור" icon="pi pi-times" 
+            (click)="closeInquiryDialog()" class="p-button-text"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showDeleteDialog" [modal]="true" [style]="{width: '400px'}">
+  <ng-template pTemplate="header">
+    <h3 class="text-red-600">
+      <i class="pi pi-exclamation-triangle mr-2"></i>
+      אישור מחיקה
+    </h3>
+  </ng-template>
+  
+  <div class="text-center p-4">
+    <i class="pi pi-trash text-red-500" style="font-size: 3rem;"></i>
+    <p class="text-xl mt-3 mb-2">האם אתה בטוח?</p>
+    <p class="text-600">המוצר יוסר מהרשימה שלך</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            (click)="cancelDelete()" class="p-button-text"></button>
+    <button pButton label="מחק" icon="pi pi-trash" 
+            (click)="confirmDelete()" class="p-button-danger"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showOrderDialog" [modal]="true" [style]="{width: '800px'}" *ngIf="selectedOrder">
+  <ng-template pTemplate="header">
+    <h3>
+      <i class="pi pi-shopping-bag mr-2"></i>
+      פרטי הזמנה #{{ selectedOrder.orderId }}
+    </h3>
+  </ng-template>
+  
+  <div class="p-4">
+    <div class="grid mb-4">
+      <div class="col-6">
+        <p class="text-600 text-sm mb-1">תאריך הזמנה</p>
+        <p class="font-bold">
+          <i class="pi pi-calendar mr-1"></i>
+          {{ selectedOrder.orderDate | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
+      <div class="col-6 text-left">
+        <p class="text-600 text-sm mb-1">סטטוס</p>
+        <p-tag [value]="getStatusLabel(selectedOrder.status)" 
+               [severity]="getStatusSeverity(selectedOrder.status)"
+               styleClass="text-lg"></p-tag>
+      </div>
+    </div>
+    
+    <div class="border-1 border-200 border-round p-3 mb-4">
+      <h4 class="mb-3">פריטים בהזמנה</h4>
+      
+      <div *ngFor="let item of selectedOrder.orderItems" class="mb-3 pb-3 border-bottom-1 border-200">
+        <div class="flex gap-3">
+          <img *ngIf="item.product?.imageUrl" 
+               [src]="getFullImageUrl(item.product.imageUrl)" 
+               [alt]="item.product?.title"
+               style="width: 100px; height: 100px; object-fit: cover;"
+               class="border-round" />
+          
+          <div class="flex-grow-1">
+            <h5 class="m-0 mb-2">{{ item.product?.title }}</h5>
+            <p class="text-600 text-sm m-0 mb-1">
+              <i class="pi pi-map-marker mr-1"></i>{{ item.product?.city }}
+            </p>
+            <p class="text-600 text-sm m-0 mb-1" *ngIf="item.product?.rooms">
+              <i class="pi pi-home mr-1"></i>{{ item.product.rooms }} חדרים
+            </p>
+            <p class="text-600 text-sm m-0 mb-1" *ngIf="item.startDate && item.endDate">
+              <i class="pi pi-calendar mr-1"></i>
+              {{ item.startDate | date:'dd/MM/yyyy' }} - {{ item.endDate | date:'dd/MM/yyyy' }}
+            </p>
+            <p class="text-600 text-sm m-0" *ngIf="item.product?.transactionType">
+              <span class="p-tag p-tag-sm" [ngClass]="{
+                'p-tag-info': item.product.transactionType === 'Sale',
+                'p-tag-success': item.product.transactionType === 'Rent',
+                'p-tag-warning': item.product.transactionType === 'Vacation'
+              }">
+                {{ item.product.transactionType === 'Sale' ? 'מכירה' : 
+                   item.product.transactionType === 'Rent' ? 'השכרה' : 'נופש' }}
+              </span>
+            </p>
+          </div>
+          
+          <div class="text-left">
+            <p class="text-xl font-bold text-primary m-0">₪{{ item.priceAtPurchase | number }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="border-top-2 border-primary pt-3">
+      <div class="flex justify-content-between align-items-center">
+        <span class="text-2xl font-bold">סה"כ כולל:</span>
+        <span class="text-3xl font-bold text-primary">₪{{ selectedOrder.totalAmount | number }}</span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="סגור" icon="pi pi-times" 
+            (click)="closeOrderDialog()" class="p-button-text"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showLogoutDialog" [modal]="true" [style]="{width: '450px'}" styleClass="logout-dialog">
+  <ng-template pTemplate="header">
+    <h3 class="logout-header">
+      <i class="pi pi-sign-out mr-2"></i>
+      אישור התנתקות
+    </h3>
+  </ng-template>
+  
+  <div class="text-center p-4">
+    <i class="pi pi-sign-out logout-icon"></i>
+    <p class="text-xl mt-3 mb-2 font-bold">האם אתה בטוח?</p>
+    <p class="text-600">הפעולה תנתק אותך מהמערכת</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            (click)="cancelLogout()" class="p-button-text"></button>
+    <button pButton label="התנתק" icon="pi pi-sign-out" 
+            (click)="confirmLogout()" class="p-button-danger"></button>
+  </ng-template>
+</p-dialog>

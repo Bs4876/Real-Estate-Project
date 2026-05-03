@@ -1,0 +1,188 @@
+<header class="luxury-header" [class.scrolled]="isScrolled">
+  <div class="header-wrapper">
+    <div class="logo-section">
+      <i class="pi pi-home logo-icon"></i>
+      <a routerLink="/" class="logo-text">RealEstate</a>
+    </div>
+    
+    <nav class="nav-center">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <i class="pi pi-home"></i>
+        <span>דף הבית</span>
+      </a>
+      <a routerLink="/about" routerLinkActive="active">
+        <i class="pi pi-info-circle"></i>
+        <span>אודות</span>
+      </a>
+      <a routerLink="/contact" routerLinkActive="active">
+        <i class="pi pi-envelope"></i>
+        <span>צור קשר</span>
+      </a>
+      <a routerLink="/blog" routerLinkActive="active">
+        <i class="pi pi-book"></i>
+        <span>בלוג</span>
+      </a>
+      <div class="nav-item-dropdown">
+        <a class="nav-link" routerLink="/products">
+          <i class="pi pi-building"></i>
+          <span>נדל"ן</span>
+          <i class="pi pi-angle-down"></i>
+        </a>
+        <div class="dropdown-content">
+          <a *ngFor="let category of categories; trackBy: trackByCategory" 
+             [routerLink]="['/products']"
+             [queryParams]="{categoryIds: category.categoryId}"
+             class="dropdown-item">
+            {{ category.categoryName }}
+          </a>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="search-section">
+      <div class="search-container">
+        <i class="pi pi-search search-icon"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (input)="onSearchInput()" 
+          (keyup.enter)="onSearchEnter()"
+          placeholder="חיפוש נכס..."
+          class="search-input"
+        />
+        <div *ngIf="searchResults.length > 0 && showSearchResults" class="search-dropdown">
+          <div *ngFor="let product of searchResults" class="search-result-item" (click)="navigateToProduct(product.productId)">
+            <img [src]="getProductImageUrl(product.imageUrl)" [alt]="product.title" class="result-image">
+            <div class="result-info">
+              <div class="result-title">{{ product.title }}</div>
+              <div class="result-details">
+                <span class="result-city"><i class="pi pi-map-marker"></i> {{ product.city }}</span>
+                <span class="result-price">₪{{ product.price | number }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="search-footer" (click)="viewAllResults()">
+            <span>ראה עוד תוצאות</span>
+            <i class="pi pi-arrow-left"></i>
+          </div>
+        </div>
+        <div *ngIf="searchQuery && searchResults.length === 0 && !isSearching && showSearchResults" class="search-dropdown">
+          <div class="no-results">
+            <i class="pi pi-info-circle"></i>
+            <span>לא נמצאו תוצאות</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="actions-section">
+      <div class="add-property-arrow" *ngIf="!isAdmin()" (click)="addProduct()">
+        <span class="arrow-text">להוספת נכס</span>
+        <i class="pi pi-plus arrow-icon"></i>
+      </div>
+      
+      <div class="admin-arrow" *ngIf="isAdmin()">
+        <div class="arrow-trigger expanded" (click)="navigateToAdminTab(0)" (mouseenter)="showAdminMenu = true" (mouseleave)="showAdminMenu = false">
+          <i class="pi pi-shield arrow-icon"></i>
+          <span class="arrow-text">ניהול המערכת</span>
+        </div>
+        <div class="admin-dropdown" [class.show]="showAdminMenu" (mouseenter)="showAdminMenu = true" (mouseleave)="showAdminMenu = false">
+          <a (click)="navigateToAdminTab(0)" class="admin-dropdown-item">
+            <i class="pi pi-chart-line"></i>
+            <span>סטטיסטיקות</span>
+          </a>
+          <a (click)="navigateToAdminTab(1)" class="admin-dropdown-item">
+            <i class="pi pi-users"></i>
+            <span>משתמשים</span>
+          </a>
+          <a (click)="navigateToAdminTab(2)" class="admin-dropdown-item">
+            <i class="pi pi-box"></i>
+            <span>נכסים</span>
+          </a>
+          <a (click)="navigateToAdminTab(3)" class="admin-dropdown-item">
+            <i class="pi pi-shopping-cart"></i>
+            <span>הזמנות</span>
+          </a>
+          <a (click)="navigateToAdminTab(4)" class="admin-dropdown-item">
+            <i class="pi pi-envelope"></i>
+            <span>פניות</span>
+          </a>
+          <a (click)="navigateToAdminTab(5)" class="admin-dropdown-item">
+            <i class="pi pi-tags"></i>
+            <span>קטגוריות</span>
+          </a>
+        </div>
+      </div>
+      
+      <div class="user-icons-group">
+        <div class="user-menu" *ngIf="isLoggedIn(); else loginLink" style="position: relative;" (mouseenter)="showUserMenu=true" (mouseleave)="showUserMenu=false">
+          <a class="icon-link user-link" routerLink="/profile" [queryParams]="{tab: 0}" style="cursor: pointer; display: flex; align-items: center; gap: 5px; position: relative;">
+            <i class="pi pi-user" style="font-size: 1.2rem;"></i>
+            <span class="user-badge" style="position: absolute; top: -4px; right: -4px; width: 10px; height: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(102, 126, 234, 0.4);"></span>
+          </a>
+          <div *ngIf="showUserMenu" class="user-dropdown-menu">
+            <div class="user-info">
+              <i class="pi pi-user-edit" style="font-size: 2rem; color: var(--primary-color);"></i>
+              <div>
+                <p class="user-name">{{ currentUser?.fullName }}</p>
+                <p class="user-role">משתמש רשום</p>
+              </div>
+            </div>
+            <div class="menu-divider"></div>
+            <a routerLink="/profile" [queryParams]="{tab: 0}" (click)="showUserMenu=false" class="menu-item">
+              <i class="pi pi-user"></i>
+              <span>איזור אישי</span>
+            </a>
+            <a routerLink="/profile" [queryParams]="{tab: 1}" (click)="showUserMenu=false" class="menu-item">
+              <i class="pi pi-shopping-bag"></i>
+              <span>ההזמנות שלי</span>
+            </a>
+            <a routerLink="/profile" [queryParams]="{tab: 2}" (click)="showUserMenu=false" class="menu-item">
+              <i class="pi pi-box"></i>
+              <span>המוצרים שלי</span>
+            </a>
+            <a routerLink="/profile" [queryParams]="{tab: 5}" (click)="showUserMenu=false" class="menu-item">
+              <i class="pi pi-send"></i>
+              <span>הפניות שלי</span>
+            </a>
+            <a *ngIf="!isAdmin()" routerLink="/profile" [queryParams]="{tab: 6}" (click)="showUserMenu=false" class="menu-item">
+              <i class="pi pi-inbox"></i>
+              <span>פניות אלי</span>
+            </a>
+            <a *ngIf="isAdmin()" routerLink="/admin" (click)="showUserMenu=false" class="menu-item admin-item">
+              <i class="pi pi-shield"></i>
+              <span>ניהול מערכת</span>
+            </a>
+            <a routerLink="/add-product" (click)="showUserMenu=false" class="menu-item highlight">
+              <i class="pi pi-plus-circle"></i>
+              <span>הוסף מוצר חדש</span>
+            </a>
+            <div class="menu-divider"></div>
+            <a routerLink="/cart" (click)="showUserMenu=false" class="menu-item">
+              <i class="pi pi-shopping-cart"></i>
+              <span>הסל שלי</span>
+            </a>
+            <a routerLink="/profile" [queryParams]="{tab: 4}" (click)="showUserMenu=false" class="menu-item danger">
+              <i class="pi pi-sign-out"></i>
+              <span>התנתקות</span>
+            </a>
+          </div>
+        </div>
+        
+        <ng-template #loginLink>
+          <a routerLink="/auth" class="icon-link">
+            <i class="pi pi-user"></i>
+          </a>
+        </ng-template>
+        
+        <a routerLink="/cart" class="icon-link cart-link" pBadge [value]="cartItemCount.toString()" severity="contrast">
+          <i class="pi pi-shopping-cart"></i>
+        </a>
+        
+        <a routerLink="/favorites" class="icon-link favorites-link" pBadge [value]="favoritesCount.toString()" severity="danger">
+          <i class="pi pi-heart"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,63 @@
+<div class="chatbot-container">
+  <!-- Floating Button -->
+  <button class="chat-button" (click)="toggleChat()" [class.open]="isOpen">
+    <i [class]="isOpen ? 'pi pi-times' : 'pi pi-comments'"></i>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" [class.open]="isOpen">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="flex align-items-center gap-2">
+        <i class="pi pi-comments"></i>
+        <div>
+          <h3>עוזר נדל"ן</h3>
+          <span class="status">מקוון</span>
+        </div>
+      </div>
+      <button class="close-btn" (click)="toggleChat()">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" #messagesContainer>
+      <div *ngFor="let msg of messages" 
+           [class]="msg.isBot ? 'message bot-message' : 'message user-message'">
+        <div class="message-content">
+          <p [innerHTML]="msg.text.replace(/\n/g, '<br>')"></p>
+          <span class="timestamp">{{ msg.timestamp | date:'HH:mm' }}</span>
+        </div>
+      </div>
+      
+      <div *ngIf="isTyping" class="message bot-message">
+        <div class="message-content typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions" *ngIf="messages.length === 1">
+      <button *ngFor="let action of quickActions" 
+              class="quick-action-btn"
+              (click)="handleQuickAction(action.action)">
+        <i [class]="'pi ' + action.icon"></i>
+        {{ action.label }}
+      </button>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+      <input type="text" 
+             [(ngModel)]="userInput" 
+             (keyup.enter)="sendMessage()"
+             placeholder="הקלד הודעה...">
+      <button (click)="sendMessage()" [disabled]="!userInput.trim()">
+        <i class="pi pi-send"></i>
+      </button>
+    </div>
+  </div>
+</div>

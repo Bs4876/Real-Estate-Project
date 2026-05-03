@@ -1,0 +1,278 @@
+<div class="container p-5" *ngIf="product; else loading">
+  <button *ngIf="!isEmbedded" pButton icon="pi pi-arrow-right" 
+          [label]="returnUrl === '/profile' ? 'חזרה למוצרים שלי' : returnUrl === '/favorites' ? 'חזרה למועדפים' : 'חזרה לקטלוג'" 
+          (click)="goBack()" class="p-button-text mb-4"></button>
+
+  <div class="grid shadow-4 border-round bg-white overflow-hidden" [style.min-height]="isEmbedded ? 'auto' : '550px'">
+    <div class="col-12 md:col-7 p-0 bg-white border-left-1 border-100">
+      <div class="flex" style="height: 100%;">
+        <div class="flex flex-column gap-2 p-3" style="width: 120px; overflow-y: auto; max-height: 550px; background: white;">
+          <div *ngFor="let img of images; let i = index" 
+               (click)="onImageChange(i)"
+               class="cursor-pointer border-round overflow-hidden"
+               [ngClass]="{'border-3 border-primary': activeIndex === i, 'border-1 border-200': activeIndex !== i}">
+            <img [src]="img.thumbnailImageSrc" 
+                 style="width: 100%; height: 80px; object-fit: cover; display: block;" />
+          </div>
+        </div>
+        
+        <div class="flex-grow-1 flex align-items-center justify-content-center relative" style="background: #f8f9fa;">
+          <img [src]="images[activeIndex]?.itemImageSrc" 
+               (click)="openLightbox(activeIndex)"
+               style="width: 100%; height: 550px; object-fit: contain; cursor: zoom-in;" />
+          
+          <!-- חיצים למעבר בין תמונות -->
+          <button *ngIf="images.length > 1" 
+                  pButton icon="pi pi-chevron-left" 
+                  class="p-button-rounded p-button-text absolute" 
+                  style="left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white;"
+                  (click)="previousImage()"></button>
+          
+          <button *ngIf="images.length > 1" 
+                  pButton icon="pi pi-chevron-right" 
+                  class="p-button-rounded p-button-text absolute" 
+                  style="right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white;"
+                  (click)="nextImage()"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-5 p-5 flex flex-column">
+      
+      <div class="mb-3">
+        <div class="flex justify-content-between align-items-start mb-2">
+          <h1 class="text-3xl font-bold text-900 m-0">{{ product.title }}</h1>
+          <span class="p-tag p-tag-warning text-sm px-2 py-1">{{ product.TransactionType }}</span>
+        </div>
+        <p class="text-600 text-lg m-0"><i class="pi pi-map-marker mr-2"></i>{{ product.city }}</p>
+      </div>
+      <div class="text-4xl font-bold text-primary mb-2">₪{{ product.price | number }}</div>
+      <div class="bg-orange-50 border-2 border-orange-300 p-3 border-round mb-4">
+        <div class="flex align-items-center gap-2 mb-2">
+          <i class="pi pi-info-circle text-orange-600"></i>
+          <span class="font-bold text-orange-800">פירוט תשלום</span>
+        </div>
+        <div class="flex justify-content-between text-sm mb-1">
+          <span class="text-600">מחיר בסיס:</span>
+          <span class="font-semibold">₪{{ product.price | number }}</span>
+        </div>
+        <div class="flex justify-content-between text-sm mb-1">
+          <span class="text-600">עמלת שירות ({{ getCommissionRate() }}):</span>
+          <span class="font-semibold text-orange-600">₪{{ getBuyerCommission() | number }}</span>
+        </div>
+        <div class="border-top-1 border-orange-200 pt-2 mt-2">
+          <div class="flex justify-content-between">
+            <span class="font-bold text-lg">סה"כ לתשלום:</span>
+            <span class="font-bold text-primary text-2xl">₪{{ getTotalPrice() | number }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid text-center border-1 border-200 border-round mb-4 p-3" *ngIf="product.TransactionType === 'Vacation'">
+        <div class="col-6 border-left-1 border-200">
+          <span class="block text-500 font-semibold mb-1">חדרים</span>
+          <span class="text-2xl font-bold text-900">{{ product.rooms }}</span>
+        </div>
+        
+        <div class="col-6">
+          <span class="block text-500 font-semibold mb-1">מיטות</span>
+          <span class="text-2xl font-bold text-900">{{ product.beds }}</span>
+        </div>
+      </div>
+
+      <div class="surface-50 p-3 border-round mb-4">
+        <h3 class="mt-0 mb-2 text-lg font-bold">תיאור</h3>
+        <p class="text-700 line-height-3 m-0 text-sm">{{ product.description }}</p>
+      </div>
+
+      <div class="mb-4" *ngIf="product.TransactionType === 'Vacation'">
+        <label class="block font-bold mb-2 text-sm">בחירת תאריכים:</label>
+        <p-datepicker [(ngModel)]="rangeDates" 
+                    selectionMode="range" 
+                    [readonlyInput]="true" 
+                    [minDate]="minDate" 
+                    [disabledDates]="disabledDates"
+                    placeholder="בחר תאריכי שהייה" 
+                    styleClass="w-full" 
+                    [showIcon]="true"
+                    dateFormat="dd/mm/yy"
+                    (onMonthChange)="onMonthChange($event)"
+                    (ngModelChange)="onDateChange($event)"></p-datepicker>
+        
+        <div *ngIf="disabledDates.length > 0" class="mt-2 p-3 bg-red-50 border-2 border-red-300 rounded-lg availability-indicator">
+          <div class="flex align-items-center gap-2 mb-2">
+            <i class="pi pi-calendar-times text-red-600" style="font-size: 1.2rem;"></i>
+            <span class="text-red-600 font-bold">⚠️ תאריכים תפוסים:</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let date of disabledDates" class="occupied-date-badge">
+              {{ date.getDate() }}/{{ date.getMonth() + 1 }}
+            </span>
+          </div>
+        </div>
+        
+        <div *ngIf="availabilityMessage" 
+             class="mt-3 p-3 border-2 rounded-lg availability-message"
+             [ngClass]="{
+               'bg-red-50 border-red-300': !isRangeAvailable, 
+               'bg-green-50 border-green-300': isRangeAvailable
+             }">
+          <div class="flex align-items-center gap-2">
+            <i [class]="isRangeAvailable ? 'pi pi-check-circle text-green-600' : 'pi pi-times-circle text-red-600'" 
+               style="font-size: 1.2rem;"></i>
+            <span [class]="isRangeAvailable ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'">
+              {{ availabilityMessage }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-column gap-2 mt-auto">
+        <button *ngIf="isOwner() && !isEmbedded" pButton label="עריכת מוצר" icon="pi pi-pencil" 
+                class="w-full p-2 font-bold"
+                [routerLink]="['/edit-product', product.productId]"
+                [queryParams]="{returnTo: 'details'}"></button>
+        
+        <ng-container *ngIf="!isOwner()">
+          <!-- כפתורים לנופש (Vacation) בלבד -->
+          <ng-container *ngIf="product.TransactionType === 'Vacation'">
+            <button pButton label="הוספה לסל" icon="pi pi-shopping-cart" 
+                    class="w-full p-2 font-bold"
+                    [disabled]="!canAddToCart()" (click)="addToCart()"></button>
+          </ng-container>
+          
+          <!-- כפתורים למכירה/השכרה (Sale/Rent) -->
+          <ng-container *ngIf="(product.TransactionType === 'Sale' || product.TransactionType === 'Rent') && !isEmbedded">
+            <button pButton 
+                    [label]="isFavorite() ? 'הסר ממועדפים' : 'שמור למועדפים'" 
+                    [icon]="isFavorite() ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                    class="w-full p-2 font-bold"
+                    [ngClass]="isFavorite() ? 'p-button-danger' : 'p-button-success'"
+                    (click)="toggleFavorite()"></button>
+          </ng-container>
+          
+          <button *ngIf="!isEmbedded" pButton label="פרטי מפרסם" icon="pi pi-phone" 
+                  class="w-full p-2 p-button-outlined p-button-secondary font-bold"
+                  (click)="openContactDialog()"></button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="flex justify-content-center align-items-center p-8">
+    <div *ngIf="product === null; else spinner" class="text-center">
+      <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #f59e0b;"></i>
+      <p class="mt-3 text-xl">המוצר לא נמצא</p>
+      <button *ngIf="!isEmbedded" pButton label="חזרה" (click)="goBack()" class="mt-3"></button>
+    </div>
+    <ng-template #spinner>
+      <i class="pi pi-spin pi-spinner text-primary" style="font-size: 3rem"></i>
+    </ng-template>
+  </div>
+</ng-template>
+
+<p-dialog [(visible)]="showContactDialog" [modal]="true" [style]="{width: '550px'}" header="יצירת קשר עם המפרסם">
+  <div class="p-3">
+    <div class="mb-3 p-3 bg-blue-50 border-round">
+      <div class="flex align-items-center gap-3 mb-2">
+        <i class="pi pi-user contact-icon" style="font-size: 1.5rem;"></i>
+        <div>
+          <p class="font-bold text-lg m-0">בעל הנכס: {{ ownerDetails?.fullName || 'טוען...' }}</p>
+          <p class="text-sm text-600 m-0">נכס: {{ product?.title }}</p>
+        </div>
+      </div>
+      <div class="border-top-1 border-blue-200 pt-2 mt-2">
+        <p class="text-sm m-0"><i class="pi pi-phone ml-2"></i><strong>ליצירת קשר:</strong> 1-800-{{ ownerDetails?.phone || 'טוען...' }}</p>
+      </div>
+    </div>
+
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">שם מלא *</label>
+      <input pInputText [(ngModel)]="contactForm.name" class="w-full" required />
+    </div>
+
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">טלפון *</label>
+      <input pInputText [(ngModel)]="contactForm.phone" class="w-full" required 
+             (ngModelChange)="phoneError = ''" />
+      <small class="text-red-500" *ngIf="phoneError">{{ phoneError }}</small>
+    </div>
+
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">אימייל *</label>
+      <input pInputText type="email" [(ngModel)]="contactForm.email" class="w-full" required 
+             (ngModelChange)="emailError = ''" />
+      <small class="text-red-500" *ngIf="emailError">{{ emailError }}</small>
+    </div>
+
+    <div class="field mb-2">
+      <label class="block mb-2 font-semibold">הודעה</label>
+      <textarea [(ngModel)]="contactForm.message" rows="2" class="w-full p-2 border-1 border-300 border-round" 
+                placeholder="שתף פרטים נוספים..."></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            (click)="showContactDialog=false" class="p-button-text"></button>
+    <button pButton label="שליחה" icon="pi pi-send" 
+            (click)="submitContactForm()" 
+            [disabled]="!contactForm.name || !contactForm.phone || !contactForm.email"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showRatingDialog" [modal]="true" [style]="{width: '400px'}" header="דרג את הנכס">
+  <div class="text-center p-4">
+    <h3 class="mb-3">כמה אהבת את הנכס?</h3>
+    <div class="flex justify-content-center gap-2 mb-4">
+      <i *ngFor="let star of [1,2,3,4,5]" 
+         class="pi pi-star-fill cursor-pointer"
+         [style.color]="star <= (hoverRating || selectedRating) ? '#fbbf24' : '#d1d5db'"
+         [style.font-size]="'3rem'"
+         (click)="setRating(star)"
+         (mouseenter)="setHoverRating(star)"
+         (mouseleave)="setHoverRating(0)"></i>
+    </div>
+    <p class="text-600" *ngIf="selectedRating > 0">בחרת: {{ selectedRating }} כוכבים</p>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            (click)="showRatingDialog=false" class="p-button-text"></button>
+    <button pButton label="הוסף למועדפים" icon="pi pi-heart" 
+            (click)="submitRating()" 
+            [disabled]="selectedRating === 0"
+            class="p-button-success"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Lightbox Dialog -->
+<p-dialog [(visible)]="showLightbox" [modal]="true" [style]="{width: '90vw', height: '90vh'}" 
+          [closable]="true" (onHide)="closeLightbox()" styleClass="lightbox-dialog">
+  <ng-template pTemplate="header">
+    <div class="flex align-items-center gap-3">
+      <button pButton icon="pi pi-search-plus" class="p-button-rounded p-button-text" 
+              (click)="zoomIn()" pTooltip="הגדל"></button>
+      <button pButton icon="pi pi-search-minus" class="p-button-rounded p-button-text" 
+              (click)="zoomOut()" pTooltip="הקטן"></button>
+      <span class="text-sm">{{ activeIndex + 1 }} / {{ images.length }}</span>
+    </div>
+  </ng-template>
+  
+  <div class="lightbox-content" style="height: calc(90vh - 120px); overflow: auto; display: flex; align-items: center; justify-content: center;">
+    <img [src]="images[activeIndex]?.itemImageSrc" 
+         [style.transform]="'scale(' + zoomLevel + ')'"
+         style="max-width: 100%; transition: transform 0.3s ease;" />
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-between w-full">
+      <button pButton icon="pi pi-chevron-right" label="הקודם" 
+              (click)="previousImage()" [disabled]="activeIndex === 0"></button>
+      <button pButton icon="pi pi-chevron-left" label="הבא" iconPos="left"
+              (click)="nextImage()" [disabled]="activeIndex === images.length - 1"></button>
+    </div>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,288 @@
+.blog-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  padding: 2rem;
+  direction: rtl;
+}
+
+.blog-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 3s infinite;
+  }
+  
+  h1 {
+    font-size: 3rem;
+    margin: 0 0 1rem 0;
+    font-weight: 800;
+    position: relative;
+    
+    i {
+      margin-left: 1rem;
+      animation: bounce 2s infinite;
+    }
+  }
+  
+  .header-subtitle {
+    font-size: 1.3rem;
+    margin: 0;
+    opacity: 0.95;
+    font-weight: 500;
+    position: relative;
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(0deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.blog-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-12px) scale(1.02);
+    
+    ::ng-deep .p-card {
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.25);
+    }
+    
+    .blog-image {
+      transform: scale(1.1);
+    }
+  }
+  
+  ::ng-deep .p-card {
+    height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    background: white;
+    border: 1px solid #e9ecef;
+    
+    .p-card-header {
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    .p-card-body {
+      padding: 0;
+    }
+    
+    .p-card-content {
+      padding: 0;
+    }
+  }
+}
+
+.blog-image {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.blog-content {
+  padding: 1.75rem;
+}
+
+.blog-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  
+  ::ng-deep .p-tag {
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+  }
+  
+  .read-time {
+    color: #64748b;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+}
+
+.blog-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+  
+  &:hover {
+    color: #667eea;
+  }
+}
+
+.blog-excerpt {
+  color: #64748b;
+  line-height: 1.7;
+  margin: 0 0 1.5rem 0;
+  font-size: 1rem;
+}
+
+.blog-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.25rem;
+  border-top: 2px solid #e9ecef;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  
+  i {
+    color: #667eea;
+    font-size: 1.1rem;
+  }
+  
+  .separator {
+    margin: 0 0.25rem;
+    color: #cbd5e1;
+  }
+}
+
+::ng-deep .p-button-text {
+  color: #667eea;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white !important;
+    transform: translateX(-5px);
+  }
+}
+
+@media (max-width: 768px) {
+  .blog-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .blog-header {
+    padding: 2rem 1rem;
+    
+    h1 {
+      font-size: 2rem;
+    }
+    
+    .header-subtitle {
+      font-size: 1rem;
+    }
+  }
+  
+  .blog-image {
+    height: 220px;
+  }
+}
+
+::ng-deep .p-dialog {
+  direction: rtl;
+  
+  .p-dialog-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 1.5rem;
+  }
+  
+  .p-dialog-content {
+    padding: 0;
+  }
+}
+
+.dialog-content {
+  .dialog-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dialog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .dialog-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #64748b;
+    font-size: 0.95rem;
+    
+    i {
+      color: #667eea;
+    }
+    
+    .separator {
+      margin: 0 0.25rem;
+      color: #cbd5e1;
+    }
+  }
+  
+  .dialog-text {
+    padding: 0 1.5rem 1.5rem;
+    line-height: 1.8;
+    color: #4b5563;
+    font-size: 1.05rem;
+    
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+}

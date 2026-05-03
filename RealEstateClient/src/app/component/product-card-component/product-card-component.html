@@ -1,0 +1,241 @@
+<div class="product-card">
+  <div class="card-image" (click)="viewDetails(product.productId)">
+    <img [src]="imageUrl" [alt]="product.title">
+    <div class="image-overlay"></div>
+    <div class="badges">
+      <span class="badge badge-type" [ngClass]="{
+        'badge-sale': product.TransactionType === 'Sale',
+        'badge-rent': product.TransactionType === 'Rent',
+        'badge-vacation': product.TransactionType === 'Vacation'
+      }">
+        {{ getTransactionTypeLabel(product.TransactionType) }}
+      </span>
+      <span *ngIf="isMyProduct" class="badge badge-mine">
+        <i class="pi pi-user"></i> שלי
+      </span>
+    </div>
+    <button class="favorite-btn" 
+            (click)="$event.stopPropagation(); addToFavorites(product)"
+            [class.active]="isFavorite()">
+      <i class="pi" [ngClass]="isFavorite() ? 'pi-heart-fill' : 'pi-heart'"></i>
+    </button>
+  </div>
+
+    <div class="card-content">
+    <div class="location">
+      <i class="pi pi-map-marker"></i>
+      <span>{{ product.city }}</span>
+    </div>
+
+    <h3 class="title" (click)="viewDetails(product.productId)">{{ product.title }}</h3>
+
+    <div class="features" *ngIf="product.rooms || product.beds">
+      <span *ngIf="product.rooms" class="feature-item">
+        <i class="pi pi-home"></i>
+        {{ product.rooms }} חדרים
+      </span>
+      <span *ngIf="product.beds" class="feature-item">
+        <i class="pi pi-moon"></i>
+        {{ product.beds }} מיטות
+      </span>
+    </div>
+
+    <div class="price-section">
+      <div class="price">₪{{ product.price | number }}</div>
+      <div *ngIf="isVacationType()" class="commission">+ עמלה 3%</div>
+    </div>
+
+    <div class="actions">
+      <ng-container *ngIf="!isMyProduct && isVacationType()">
+        <button type="button" class="btn btn-primary" (click)="addToCart(product)">
+          <i class="pi pi-shopping-cart"></i>
+          הוסף לסל
+        </button>
+        <button type="button" class="btn btn-icon" (click)="addToFavorites(product)" pTooltip="הוסף למועדפים">
+          <i class="pi pi-heart"></i>
+        </button>
+        <button type="button" class="btn btn-icon" (click)="viewDetails(product.productId)" pTooltip="פרטים">
+          <i class="pi pi-info-circle"></i>
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="!isMyProduct && !isVacationType()">
+        <button type="button" class="btn btn-primary" (click)="openContactDialog()">
+          <i class="pi pi-phone"></i>
+          יצירת קשר
+        </button>
+        <button type="button" class="btn btn-icon" (click)="addToFavorites(product)" pTooltip="הוסף למועדפים">
+          <i class="pi pi-heart"></i>
+        </button>
+        <button type="button" class="btn btn-icon" (click)="viewDetails(product.productId)" pTooltip="פרטים">
+          <i class="pi pi-info-circle"></i>
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="isMyProduct">
+        <button type="button" class="btn btn-warning" (click)="editProduct()">
+          <i class="pi pi-pencil"></i>
+          עריכה
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="showContactDialog" [modal]="true" [style]="{width: '550px'}" header="יצירת קשר עם המפרסם">
+  <div class="p-3">
+    <div class="mb-3 p-3 bg-blue-50 border-round">
+      <div class="flex align-items-center gap-3 mb-2">
+        <i class="pi pi-user contact-icon" style="font-size: 1.5rem;"></i>
+        <div>
+          <p class="font-bold text-lg m-0">בעל הנכס: {{ ownerDetails?.fullName || 'טוען...' }}</p>
+          <p class="text-sm text-600 m-0">נכס: {{ product?.title }}</p>
+        </div>
+      </div>
+      <div class="border-top-1 border-blue-200 pt-2 mt-2">
+        <p class="text-sm m-0"><i class="pi pi-phone ml-2"></i><strong>ליצירת קשר:</strong> 1-800-{{ ownerDetails?.phone || 'טוען...' }}</p>
+      </div>
+    </div>
+
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">שם מלא *</label>
+      <input pInputText [(ngModel)]="contactForm.name" class="w-full" required />
+    </div>
+
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">טלפון *</label>
+      <input pInputText [(ngModel)]="contactForm.phone" class="w-full" required 
+             (ngModelChange)="phoneError = ''" />
+      <small class="text-red-500" *ngIf="phoneError">{{ phoneError }}</small>
+    </div>
+
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">אימייל *</label>
+      <input pInputText type="email" [(ngModel)]="contactForm.email" class="w-full" required 
+             (ngModelChange)="emailError = ''" />
+      <small class="text-red-500" *ngIf="emailError">{{ emailError }}</small>
+    </div>
+
+    <div class="field mb-2">
+      <label class="block mb-2 font-semibold">הודעה</label>
+      <textarea [(ngModel)]="contactForm.message" rows="2" class="w-full p-2 border-1 border-300 border-round" 
+                placeholder="שתף פרטים נוספים..."></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            (click)="showContactDialog=false" class="p-button-text"></button>
+    <button pButton label="שליחה" icon="pi pi-send" 
+            (click)="submitContactForm()" 
+            [disabled]="!contactForm.name || !contactForm.phone || !contactForm.email"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showDetailsDialog" [modal]="true" [style]="{width: '800px'}" 
+          [maximizable]="true" (onHide)="onDialogHide()" *ngIf="showDetailsDialog">
+  <ng-template pTemplate="header">
+    <h3>{{ productDetails?.title }}</h3>
+  </ng-template>
+  
+  <div *ngIf="productDetails" class="p-4">
+    <img [src]="getFullImageUrl(productDetails.imageUrl)" [alt]="productDetails.title" 
+         class="w-full border-round mb-3" style="height: 300px; object-fit: cover;">
+    
+    <div class="grid mb-3">
+      <div class="col-12">
+        <div class="bg-orange-50 border-2 border-orange-300 p-3 border-round mb-3">
+          <div class="flex justify-content-between mb-2">
+            <span class="text-600">מחיר בסיס:</span>
+            <span class="font-semibold">₪{{ productDetails.price | number }}</span>
+          </div>
+          <div class="flex justify-content-between mb-2">
+            <span class="text-600">עמלת שירות ({{ getCommissionRate() }}):</span>
+            <span class="font-semibold text-orange-600">₪{{ getBuyerCommission() | number }}</span>
+          </div>
+          <div class="border-top-1 border-orange-200 pt-2">
+            <div class="flex justify-content-between">
+              <span class="font-bold">סה"כ לתשלום:</span>
+              <span class="font-bold text-primary text-xl">₪{{ getTotalPrice() | number }}</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-600 mb-2">
+          <i class="pi pi-map-marker mr-2"></i>{{ productDetails.city }}
+        </p>
+        <p *ngIf="productDetails.rooms" class="text-600 mb-2">
+          <i class="pi pi-home mr-2"></i>{{ productDetails.rooms }} חדרים
+        </p>
+        <p *ngIf="productDetails.beds" class="text-600 mb-2">
+          <i class="pi pi-moon mr-2"></i>{{ productDetails.beds }} מיטות
+        </p>
+      </div>
+      
+      <div class="col-12">
+        <p class="text-700">{{ productDetails.description }}</p>
+      </div>
+    </div>
+
+    <div class="border-top-1 border-200 pt-3" *ngIf="productDetails?.TransactionType === 'Vacation'">
+      <h4 class="mb-3">בחר תאריכים</h4>
+      <p-datepicker [(ngModel)]="selectedDates" 
+                    selectionMode="range" 
+                    [inline]="true" 
+                    [minDate]="minDate" 
+                    [disabledDates]="disabledDates"
+                    dateFormat="dd/mm/yy" 
+                    class="w-full"
+                    (onMonthChange)="onMonthChange($event)"
+                    (ngModelChange)="onDateChange($event)"></p-datepicker>
+      
+      <div *ngIf="disabledDates.length > 0" class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm">
+        <span class="text-red-600 font-semibold">⚠️ תאריכים תפוסים: </span>
+        <span class="text-red-700">
+          <span *ngFor="let date of disabledDates; let i = index">
+            {{ date.getDate() }}/{{ date.getMonth() + 1 }}<span *ngIf="i < disabledDates.length - 1">, </span>
+          </span>
+        </span>
+      </div>
+      
+      <div *ngIf="availabilityMessage" 
+           [ngClass]="{'text-red-500': !isRangeAvailable, 'text-green-500': isRangeAvailable}"
+           class="mt-2 text-sm font-semibold">
+        {{ availabilityMessage }}
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" (click)="onDialogHide()" 
+            class="p-button-text"></button>
+    <button pButton label="הוסף לסל" icon="pi pi-shopping-cart" 
+            (click)="addToCartWithDates()" 
+            [disabled]="!selectedDates || !selectedDates[0] || !selectedDates[1] || !isRangeAvailable" 
+            class="p-button-success"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showRatingDialog" [modal]="true" [style]="{width: '400px'}" header="דרג את הנכס">
+  <div class="text-center p-4">
+    <h3 class="mb-3">כמה אהבת את הנכס?</h3>
+    <div class="flex justify-content-center gap-2 mb-4">
+      <i *ngFor="let star of [1,2,3,4,5]" 
+         class="pi pi-star-fill cursor-pointer"
+         [style.color]="star <= (hoverRating || selectedRating) ? '#fbbf24' : '#d1d5db'"
+         [style.font-size]="'3rem'"
+         (click)="setRating(star)"
+         (mouseenter)="setHoverRating(star)"
+         (mouseleave)="setHoverRating(0)"></i>
+    </div>
+    <p class="text-600" *ngIf="selectedRating > 0">בחרת: {{ selectedRating }} כוכבים</p>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            (click)="showRatingDialog=false" class="p-button-text"></button>
+    <button pButton label="הוסף למועדפים" icon="pi pi-heart" 
+            (click)="submitRating()" 
+            [disabled]="selectedRating === 0"
+            class="p-button-success"></button>
+  </ng-template>
+</p-dialog>

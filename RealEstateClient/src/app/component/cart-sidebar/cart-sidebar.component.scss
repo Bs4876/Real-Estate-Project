@@ -1,0 +1,153 @@
+::ng-deep {
+  .p-drawer {
+    animation: slideInLeft 0.4s ease;
+  }
+  
+  .p-drawer-header {
+    animation: fadeInDown 0.5s ease;
+  }
+  
+  .p-drawer-content {
+    animation: fadeIn 0.6s ease;
+  }
+}
+
+.empty-state {
+  animation: fadeIn 0.8s ease;
+}
+
+.cart-items-container {
+  animation: fadeIn 0.5s ease;
+}
+
+.cart-item {
+  transition: all 0.3s ease;
+  animation: slideInRight 0.5s ease forwards;
+  
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    transform: translateX(-5px);
+  }
+}
+
+.cart-image {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.delete-btn {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: rotate(10deg) scale(1.1);
+  }
+}
+
+.cart-footer {
+  animation: slideUp 0.6s ease 0.3s backwards;
+}
+
+.total-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1rem;
+  border-radius: 10px;
+  animation: pulse 2s ease infinite;
+}
+
+.action-btn {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  
+  &:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+  }
+}

@@ -1,0 +1,278 @@
+<div class="home-page">
+  <p-toast position="top-center" [life]="4000"></p-toast>
+  
+  <!-- Hero Section with Background Image -->
+  <section class="hero-section" @fadeInUp>
+    <div class="hero-overlay"></div>
+    <div class="hero-shimmer"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">מצא את בית החלומות שלך</h1>
+      <p class="hero-subtitle">אלפי נכסים מובחרים למכירה ולהשכרה בכל רחבי הארץ</p>
+      <button pButton label="התחל לחפש" icon="pi pi-search" 
+              class="p-button-outlined hero-button" (click)="goToProducts()"></button>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="stats-section" @fadeInUp>
+    <div class="container">
+      <div class="grid">
+        <div class="col-12 md:col-3 text-center p-4" *ngFor="let stat of stats">
+          <div class="stat-card">
+            <i [class]="'pi ' + stat.icon + ' stat-icon'"></i>
+            <div class="stat-number" [attr.data-target]="stat.value">{{ animatedStats[stat.key] || 0 }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section" @fadeInUp>
+    <div class="container">
+      <div class="grid" [@staggerFadeIn]="featuredProducts.length">
+        <div class="col-12 md:col-4 text-center p-4">
+          <i class="pi pi-home feature-icon"></i>
+          <h3>מגוון רחב</h3>
+          <p class="text-600">אלפי נכסים למכירה, השכרה ונופש</p>
+        </div>
+        <div class="col-12 md:col-4 text-center p-4">
+          <i class="pi pi-shield feature-icon"></i>
+          <h3>אמינות מלאה</h3>
+          <p class="text-600">כל הנכסים עברו אימות ובדיקה</p>
+        </div>
+        <div class="col-12 md:col-4 text-center p-4">
+          <i class="pi pi-bolt feature-icon"></i>
+          <h3>תהליך מהיר</h3>
+          <p class="text-600">מחיפוש ועד חתימה בקלות ובמהירות</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="featured-section" @fadeInUp>
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title">נכסים מומלצים</h2>
+        <p class="section-subtitle">הנכסים הטובים ביותר שלנו במיקומים מובחרים</p>
+      </div>
+      
+      <div class="carousel-container" *ngIf="featuredProducts && featuredProducts.length > 0">
+        <button class="carousel-nav carousel-nav-right" (click)="previousProduct()">
+          <i class="pi pi-chevron-right"></i>
+        </button>
+        
+        <div class="carousel-wrapper">
+          <div class="carousel-side carousel-side-right" 
+               *ngIf="getPreviousProduct()">
+            <app-product-card [product]="getPreviousProduct()" (click)="previousProduct()"></app-product-card>
+          </div>
+          
+          <div class="carousel-center" *ngIf="featuredProducts[currentIndex]">
+            <app-product-card [product]="featuredProducts[currentIndex]"></app-product-card>
+          </div>
+          
+          <div class="carousel-side carousel-side-left" 
+               *ngIf="getNextProduct()">
+            <app-product-card [product]="getNextProduct()" (click)="nextProduct()"></app-product-card>
+          </div>
+        </div>
+        
+        <button class="carousel-nav carousel-nav-left" (click)="nextProduct()">
+          <i class="pi pi-chevron-left"></i>
+        </button>
+        
+        <div class="carousel-indicators">
+          <span *ngFor="let product of featuredProducts; let i = index" 
+                class="indicator" 
+                [class.active]="i === currentIndex"
+                (click)="goToSlide(i)"></span>
+        </div>
+      </div>
+
+      <div class="text-center mt-5">
+        <button pButton label="צפה בכל הנכסים" icon="pi pi-arrow-left" 
+                class="p-button-lg p-button-outlined" (click)="goToProducts()"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section" @fadeInUp>
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title">מה הלקוחות שלנו אומרים</h2>
+        <p class="section-subtitle">אלפי לקוחות מרוצים מצאו את הנכס המושלם איתנו</p>
+      </div>
+      
+      <div class="testimonials-carousel">
+        <button class="testimonial-nav testimonial-nav-right" (click)="previousTestimonial()">
+          <i class="pi pi-chevron-right"></i>
+        </button>
+        
+        <div class="grid">
+          <div class="col-12 md:col-4 p-3" *ngFor="let testimonial of getVisibleTestimonials()">
+            <div class="testimonial-card">
+              <div class="testimonial-stars">
+                <i class="pi pi-star-fill" *ngFor="let star of [1,2,3,4,5]"></i>
+              </div>
+              <p class="testimonial-text">"{{ testimonial.text }}"</p>
+              <div class="testimonial-author">
+                <div class="author-avatar">{{ testimonial.name.charAt(0) }}</div>
+                <div>
+                  <div class="author-name">{{ testimonial.name }}</div>
+                  <div class="author-location">{{ testimonial.location }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button class="testimonial-nav testimonial-nav-left" (click)="nextTestimonial()">
+          <i class="pi pi-chevron-left"></i>
+        </button>
+        
+        <div class="testimonial-indicators">
+          <span *ngFor="let t of testimonials; let i = index" 
+                class="indicator" 
+                [class.active]="i === currentTestimonialIndex"
+                (click)="goToTestimonial(i)"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form Section -->
+  <section class="contact-form-section" @fadeInUp>
+    <div class="container">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <h2 class="form-title">צור קשר איתנו</h2>
+          <p class="form-subtitle">מלא את הפרטים ונחזור אליך בהקדם</p>
+          
+          <form [formGroup]="contactForm" (ngSubmit)="submitContactForm()" class="contact-form">
+            <div class="form-field">
+              <label>שם מלא *</label>
+              <input pInputText formControlName="name" placeholder="הכנס שם מלא" 
+                     [class.invalid]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" />
+              <small class="error-message" *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched">
+                שם הוא שדה חובה
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label>אימייל *</label>
+              <input pInputText type="email" formControlName="email" placeholder="example@email.com" 
+                     [class.invalid]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched" />
+              <small class="error-message" *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched">
+                אימייל לא תקין
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label>טלפון *</label>
+              <input pInputText formControlName="phone" placeholder="050-0000000" 
+                     [class.invalid]="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" />
+              <small class="error-message" *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched">
+                מספר טלפון לא תקין
+              </small>
+            </div>
+            
+            <div class="form-field">
+              <label>הודעה</label>
+              <textarea formControlName="message" rows="4" 
+                        placeholder="כתוב את ההודעה שלך..."
+                        class="w-full p-3 border-2 border-300 border-round"></textarea>
+            </div>
+            
+            <button pButton type="submit" label="שלח הודעה" icon="pi pi-send" 
+                    [disabled]="contactForm.invalid || isSubmitting"
+                    [loading]="isSubmitting"
+                    class="submit-button"></button>
+          </form>
+        </div>
+        
+        <div class="col-12 md:col-6">
+          <div class="contact-info">
+            <div class="info-item">
+              <i class="pi pi-phone"></i>
+              <div>
+                <h4>טלפון</h4>
+                <p>03-1234567</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="pi pi-envelope"></i>
+              <div>
+                <h4>אימייל</h4>
+                <p>info@realestate.co.il</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="pi pi-map-marker"></i>
+              <div>
+                <h4>כתובת</h4>
+                <p>רחוב הארבעה 123, תל אביב</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section" @fadeInUp>
+    <div class="container text-center">
+      <h2 class="cta-title">מוכר או משכיר נכס?</h2>
+      <p class="cta-subtitle">פרסם את הנכס שלך בקלות והגע לאלפי קונים פוטנציאליים</p>
+      <button pButton label="פרסם נכס עכשיו" icon="pi pi-plus" 
+              class="p-button-lg p-button-outlined cta-button" (click)="addProperty()"></button>
+    </div>
+  </section>
+
+  <!-- Blog Section -->
+  <section class="blog-preview-section" @fadeInUp>
+    <div class="container">
+      <div class="section-header text-center mb-5">
+        <h2 class="section-title">מהבלוג שלנו</h2>
+        <p class="section-subtitle">מאמרים, טיפים ומידע שימושי בעולם הנדל"ן</p>
+      </div>
+      
+      <div class="blog-preview-grid">
+        <div class="blog-preview-card">
+          <i class="pi pi-book blog-preview-icon"></i>
+          <h3>מדריכים מקצועיים</h3>
+          <p>כל מה שצריך לדעת על רכישה, השכרה והשקעה בנדל"ן</p>
+        </div>
+        <div class="blog-preview-card">
+          <i class="pi pi-chart-line blog-preview-icon"></i>
+          <h3>מגמות שוק</h3>
+          <p>עדכונים שוטפים על מגמות ושינויים בשוק הנדל"ן</p>
+        </div>
+        <div class="blog-preview-card">
+          <i class="pi pi-lightbulb blog-preview-icon"></i>
+          <h3>טיפים מועילים</h3>
+          <p>עצות מעשיות לקונים, מוכרים ומשכירים</p>
+        </div>
+      </div>
+      
+      <div class="text-center mt-5">
+        <button pButton label="לכל המאמרים" icon="pi pi-arrow-left" 
+                class="p-button-lg blog-cta-button" (click)="goToBlog()"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta-section" @fadeInUp>
+    <div class="container text-center">
+      <h2 class="cta-title">מוכן למצוא את הנכס המושלם?</h2>
+      <p class="cta-subtitle">הצטרף לאלפי לקוחות מרוצים שמצאו את ביתם איתנו</p>
+      <button pButton label="התחל עכשיו" icon="pi pi-arrow-left" 
+              class="p-button-lg final-cta-button" (click)="goToProducts()"></button>
+    </div>
+  </section>
+</div>

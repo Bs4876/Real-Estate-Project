@@ -1,0 +1,34 @@
+<div class="container p-5">
+  <div class="flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="card p-5 text-center" style="max-width: 600px;">
+      <div *ngIf="orderSuccess">
+        <i class="pi pi-check-circle success-icon mb-4" style="font-size: 6rem;"></i>
+        <h1 class="text-3xl font-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ההזמנה הושלמה בהצלחה!</h1>
+        <p class="text-xl mb-2">מספר הזמנה: <strong>{{ orderId }}</strong></p>
+        <p class="text-600 mb-4">תודה על ההזמנה! אישור נשלח לכתובת המייל שלך</p>
+        
+        <div class="p-3 bg-green-50 border-round mb-4">
+          <p class="m-0 text-sm">
+            <i class="pi pi-info-circle mr-2"></i>
+            ההזמנה שלך נשמרה במערכת ותוכל לעקוב אחריה בהיסטוריית ההזמנות
+          </p>
+        </div>
+      </div>
+
+      <div *ngIf="!orderSuccess">
+        <i class="pi pi-times-circle text-red-500 mb-4" style="font-size: 6rem;"></i>
+        <h1 class="text-3xl font-bold text-red-600 mb-3">ההזמנה נכשלה</h1>
+        <p class="text-600 mb-4">מצטערים, אירעה שגיאה בעת ביצוע ההזמנה</p>
+      </div>
+
+      <div class="flex flex-column gap-3 mt-4">
+        <button pButton *ngIf="orderSuccess" label="צפה בהזמנות שלי" icon="pi pi-list" 
+                class="p-button-lg" (click)="goToOrders()"></button>
+        <button pButton label="המשך לקניות" icon="pi pi-shopping-bag" 
+                class="p-button-lg" 
+                [ngClass]="orderSuccess ? 'p-button-outlined' : ''"
+                (click)="continueShopping()"></button>
+      </div>
+    </div>
+  </div>
+</div>

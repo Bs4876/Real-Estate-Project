@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DTOs
+{
+    public record OrderItemDTO(
+    int ProductId,
+    decimal PriceAtPurchase,
+    DateTime? StartDate,
+    DateTime? EndDate
+);
+
+
+}
+

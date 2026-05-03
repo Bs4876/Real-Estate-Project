@@ -1,0 +1,139 @@
+<div class="container p-5">
+  <h1 class="text-3xl font-bold mb-4">פרסום מוצר חדש</h1>
+  
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+    <div class="grid">
+      <div class="col-12 md:col-8">
+        <p-card>
+          <div class="field mb-4">
+            <label class="block font-bold mb-2">כותרת *</label>
+            <input type="text" pInputText [(ngModel)]="product.title" name="title" required class="w-full" />
+          </div>
+
+          <div class="field mb-4">
+            <label class="block font-bold mb-2">תיאור *</label>
+            <textarea [(ngModel)]="product.description" name="description" required rows="5" class="w-full p-3 border-1 border-300 border-round"></textarea>
+          </div>
+
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <div class="field mb-4">
+                <label class="block font-bold mb-2">מחיר *</label>
+                <input type="number" [(ngModel)]="product.price" name="price" required min="0" class="w-full p-3 border-1 border-300 border-round" placeholder="מחיר ב-₪" />
+              </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <div class="field mb-4">
+                <label class="block font-bold mb-2">עיר *</label>
+                <input type="text" pInputText [(ngModel)]="product.city" name="city" required class="w-full" />
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-yellow-50 border-3 border-yellow-400 p-4 border-round mb-4" *ngIf="product.price > 0 && product.TransactionType">
+            <div class="flex align-items-center gap-2 mb-3">
+              <i class="pi pi-exclamation-triangle text-yellow-700 text-2xl"></i>
+              <span class="text-xl font-bold text-yellow-900">💰 חישוב מה שתקבל</span>
+            </div>
+            <div class="bg-white p-3 border-round">
+              <div class="flex justify-content-between mb-2">
+                <span class="text-700">מחיר מוצג:</span>
+                <span class="font-semibold">₪{{ product.price | number }}</span>
+              </div>
+              <div class="flex justify-content-between mb-2 text-red-700">
+                <span>- עמלה שלך ({{ getSellerRate() }}):</span>
+                <span class="font-semibold">₪{{ getSellerCommission() | number }}</span>
+              </div>
+              <div class="border-top-2 border-yellow-300 pt-3 mt-2">
+                <div class="flex justify-content-between align-items-center">
+                  <span class="font-bold text-xl">תקבל בפועל:</span>
+                  <span class="font-bold text-green-700 text-3xl">₪{{ getSellerReceives() | number }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-orange-50 border-2 border-orange-300 p-3 border-round mb-4 text-center" *ngIf="product.price > 0 && !product.TransactionType">
+            <i class="pi pi-arrow-up text-orange-600 text-2xl mb-2"></i>
+            <p class="text-orange-800 font-semibold m-0">בחר סוג עסקה כדי לראות את חישוב הרווחים</p>
+          </div>
+
+          <div class="grid">
+            <div class="col-12 md:col-4">
+              <div class="field mb-4">
+                <label class="block font-bold mb-2">קטגוריה *</label>
+                <select [(ngModel)]="product.categoryId" name="categoryId" required class="w-full p-3 border-1 border-300 border-round">
+                  <option value="" disabled selected>בחר קטגוריה</option>
+                  <option *ngFor="let cat of categories" [value]="cat.categoryId">{{ cat.categoryName }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+              <div class="field mb-4">
+                <label class="block font-bold mb-2">חדרים</label>
+                <input type="number" [(ngModel)]="product.rooms" name="rooms" min="0" class="w-full p-3 border-1 border-300 border-round" />
+              </div>
+            </div>
+
+            <div class="col-12 md:col-4">
+              <div class="field mb-4">
+                <label class="block font-bold mb-2">מיטות</label>
+                <input type="number" [(ngModel)]="product.beds" name="beds" min="0" class="w-full p-3 border-1 border-300 border-round" />
+              </div>
+            </div>
+          </div>
+
+          <div class="field mb-4">
+            <label class="block font-bold mb-2">סוג עסקה *</label>
+            <select [(ngModel)]="product.TransactionType" name="TransactionType" required class="w-full p-3 border-1 border-300 border-round">
+              <option value="" disabled selected>בחר סוג עסקה</option>
+              <option *ngFor="let type of transactionTypes" [value]="type.value">{{ type.label }}</option>
+            </select>
+            <div class="bg-blue-50 border-1 border-blue-200 p-3 border-round mt-2">
+              <div class="font-semibold text-blue-900 mb-2">
+                <i class="pi pi-info-circle"></i> עמלות לפי סוג עסקה:
+              </div>
+              <ul class="text-sm text-blue-800 m-0 pr-4">
+                <li>🏠 <strong>מכירה:</strong> 1% מוכר + 1% קונה = 2% סה"כ (חד פעימ)</li>
+                <li>🔑 <strong>השכרה:</strong> חודש שכירות שלם מהשוכר (חד פעמי בתחילת השכירות)</li>
+                <li>🏖️ <strong>נופש:</strong> 5% משכיר + 3% שוכר = 8% סה"כ (מכל הזמנה)</li>
+              </ul>
+            </div>
+          </div>
+        </p-card>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <p-card header="תמונות">
+          <div class="field mb-4">
+            <label class="block font-bold mb-2">תמונה ראשית *</label>
+            <input type="file" #mainImageInput (change)="onMainImageSelect($event)" accept="image/*" class="hidden" />
+            <button type="button" pButton label="בחר תמונה ראשית" icon="pi pi-upload" (click)="mainImageInput.click()" class="w-full mb-2"></button>
+            <img *ngIf="mainImagePreview" [src]="mainImagePreview" class="w-full border-round" style="max-height: 200px; object-fit: cover;" />
+          </div>
+
+          <div class="field">
+            <label class="block font-bold mb-2">תמונות נוספות</label>
+            <input type="file" #additionalImagesInput (change)="onAdditionalImagesSelect($event)" accept="image/*" multiple class="hidden" />
+            <button type="button" pButton label="הוסף תמונות" icon="pi pi-images" (click)="additionalImagesInput.click()" class="w-full mb-2"></button>
+            
+            <div class="grid" *ngIf="additionalImagesPreviews.length > 0">
+              <div class="col-6" *ngFor="let preview of additionalImagesPreviews; let i = index">
+                <div class="relative">
+                  <img [src]="preview" class="w-full border-round" style="height: 100px; object-fit: cover;" />
+                  <button type="button" pButton icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm absolute" style="top: 5px; right: 5px;" (click)="removeAdditionalImage(i)"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </p-card>
+
+        <button type="submit" pButton label="פרסם מוצר" icon="pi pi-check" [disabled]="!productForm.valid || !mainImageFile" class="w-full mt-3 p-button-success p-button-lg"></button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<p-toast></p-toast>

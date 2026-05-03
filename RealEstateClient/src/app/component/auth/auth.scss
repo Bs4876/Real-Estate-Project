@@ -1,0 +1,187 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    direction: rtl;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+
+    ::ng-deep .p-card {
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        background: white;
+        animation: slideInUp 0.6s ease;
+        
+        .p-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            border-bottom: none;
+            transition: all 0.3s ease;
+        }
+        
+        .p-card-body {
+            padding: 2.5rem;
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .field {
+        margin-bottom: 1.75rem;
+        
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #334155;
+            font-size: 1rem;
+        }
+        
+        input {
+            border-radius: 10px;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            
+            &:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+        }
+    }
+    
+    .registration-fields {
+        animation: slideIn 0.4s ease;
+        
+        .field {
+            animation: fadeInUp 0.3s ease backwards;
+            
+            &:nth-child(1) { animation-delay: 0.05s; }
+            &:nth-child(2) { animation-delay: 0.1s; }
+            &:nth-child(3) { animation-delay: 0.15s; }
+        }
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .actions {
+        margin-top: 2rem;
+        
+        ::ng-deep .p-button {
+            border-radius: 10px;
+            padding: 0.875rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            
+            &.p-button-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                
+                &:hover:not(:disabled) {
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+                }
+            }
+            
+            &.p-button-text {
+                color: #667eea;
+                background: transparent;
+                border: none;
+                
+                &:hover {
+                    color: #764ba2;
+                    background: transparent;
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    .w-full {
+        width: 100%;
+    }
+    
+    ::ng-deep .p-password {
+        width: 100%;
+        
+        input {
+            border-radius: 10px;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            
+            &:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+        }
+    }
+    
+    .p-error {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .password-strength-container {
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .password-strength-bar {
+        width: 100%;
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .password-strength-fill {
+        height: 100%;
+        transition: all 0.4s ease;
+        border-radius: 10px;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}

@@ -1,0 +1,64 @@
+<div class="blog-container">
+  <div class="blog-header">
+    <h1><i class="pi pi-book"></i> בלוג נדל"ן</h1>
+    <p class="header-subtitle">מאמרים, טיפים ומידע שימושי בעולם הנדל"ן</p>
+  </div>
+
+  <div class="blog-grid">
+    <div *ngFor="let post of blogPosts" class="blog-card">
+      <p-card>
+        <ng-template pTemplate="header">
+          <img [src]="post.image" [alt]="post.title" class="blog-image" />
+        </ng-template>
+        
+        <div class="blog-content">
+          <div class="blog-meta">
+            <p-tag [value]="post.category" [severity]="getCategoryColor(post.category)"></p-tag>
+            <span class="read-time">
+              <i class="pi pi-clock"></i> {{ post.readTime }} דקות קריאה
+            </span>
+          </div>
+          
+          <h2 class="blog-title">{{ post.title }}</h2>
+          <p class="blog-excerpt">{{ post.excerpt }}</p>
+          
+          <div class="blog-footer">
+            <div class="author-info">
+              <i class="pi pi-user"></i>
+              <span>{{ post.author }}</span>
+              <span class="separator">•</span>
+              <span>{{ post.date | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <p-button label="קרא עוד" icon="pi pi-arrow-left" 
+                      (onClick)="readPost(post.id)"
+                      styleClass="p-button-text"></p-button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayDialog" [modal]="true" [style]="{width: '90vw', 'max-width': '800px'}" 
+          [header]="selectedPost?.title" [draggable]="false" [resizable]="false" [breakpoints]="{'960px': '90vw', '640px': '95vw'}">
+  <div *ngIf="selectedPost" class="dialog-content">
+    <img [src]="selectedPost.image" [alt]="selectedPost.title" class="dialog-image" />
+    
+    <div class="dialog-meta">
+      <p-tag [value]="selectedPost.category" [severity]="getCategoryColor(selectedPost.category)"></p-tag>
+      <span class="dialog-info">
+        <i class="pi pi-user"></i> {{ selectedPost.author }}
+        <span class="separator">•</span>
+        <i class="pi pi-calendar"></i> {{ selectedPost.date | date:'dd/MM/yyyy' }}
+        <span class="separator">•</span>
+        <i class="pi pi-clock"></i> {{ selectedPost.readTime }} דקות
+      </span>
+    </div>
+    
+    <div class="dialog-text">
+      <p>{{ selectedPost.excerpt }}</p>
+      <p>תוכן המאמר המלא יתווסף בקרוב. כאן יוצג מידע מפורט, טיפים מעשיים, ודוגמאות ממשיות שיעזרו לך להבין טוב יותר את הנושא.</p>
+      <p>המאמר יכלול גם תמונות נוספות, אינפוגרפיקות, וקישורים למשאבים רלוונטיים נוספים.</p>
+    </div>
+  </div>
+</p-dialog>

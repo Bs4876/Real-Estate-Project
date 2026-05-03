@@ -1,0 +1,227 @@
+::ng-deep {
+  .p-drawer {
+    animation: slideInLeft 0.4s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    border-left: 4px solid transparent;
+    border-image: linear-gradient(180deg, #667eea, #764ba2) 1;
+  }
+  
+  .p-drawer-header {
+    animation: fadeInDown 0.5s ease;
+    background: linear-gradient(135deg, #f8f9ff, #f0f4ff);
+    border-bottom: 2px solid #e0e7ff;
+    
+    h3 {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+  
+  .p-drawer-content {
+    animation: fadeIn 0.6s ease;
+  }
+  
+  .p-button:not(.p-button-text):not(.p-button-outlined) {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border: none !important;
+    
+    &:hover {
+      background: linear-gradient(135deg, #5568d3, #6a3f8f) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+  }
+  
+  .p-button-outlined {
+    border: 2px solid #667eea !important;
+    color: #667eea !important;
+    
+    &:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+      border-color: #764ba2 !important;
+      color: #764ba2 !important;
+    }
+  }
+  
+  .p-button-text {
+    color: #667eea !important;
+    
+    &:hover {
+      background: rgba(102, 126, 234, 0.1) !important;
+      color: #764ba2 !important;
+    }
+  }
+}
+
+.empty-state {
+  animation: fadeIn 0.8s ease;
+}
+
+.favorites-container {
+  animation: fadeIn 0.5s ease;
+}
+
+.favorite-item {
+  transition: all 0.3s ease;
+  animation: slideInRight 0.5s ease forwards;
+  background: linear-gradient(135deg, #ffffff 0%, #fafaff 100%);
+  border: 1px solid #e0e7ff;
+  
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    transform: translateX(-5px);
+    border-color: #c7d2fe;
+  }
+}
+
+.favorite-image {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.favorite-title {
+  transition: color 0.3s ease;
+  
+  &:hover {
+    color: #667eea;
+  }
+}
+
+.rating-stars {
+  animation: sparkle 1s ease;
+}
+
+.action-buttons {
+  button {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.delete-btn {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: rotate(10deg) scale(1.1);
+  }
+}
+
+.footer-actions {
+  animation: slideUp 0.6s ease 0.3s backwards;
+}
+
+.action-btn {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  
+  &:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.edit-rating-dialog {
+  .star-rating {
+    i {
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.2) rotate(15deg);
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}

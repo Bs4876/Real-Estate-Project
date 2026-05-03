@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script defer src="home.js"></script>
+    <title>webApi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .existUser, .newUser {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+        }
+
+        label {
+            margin: 5px 0;
+        }
+
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #218838;
+            }
+
+        .newUser {
+            display: none; 
+        }
+        progress{
+            width:100%;
+            height:2vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="existUser">
+            <h3>משתמש רשום</h3>
+            <label for="existUserName">שם משתמש</label>
+            <input type="email" id="existUserName" required />
+            <label for="existPassword">סיסמא</label>
+            <input type="password" id="existPassword" required />
+            <button onClick="login()">התחברות</button>
+            <button onClick="toggleNewUser()">משתמש חדש</button>
+        </div>
+
+        <div class="newUser">
+            <h3>משתמש חדש</h3>
+            <label for="userName">שם משתמש</label>
+            <input type="email" id="userName" required />
+            <label for="firstName">שם פרטי</label>
+            <input type="text" id="firstName" required />
+            <label for="lastName">שם משפחה</label>
+            <input type="text" id="lastName" required />
+            <label for="password">סיסמא</label>
+            <input type="password" id="password" required />
+            <button onClick="checkStrengthPassword()">בדוק חוזק סיסמה</button>
+            <button onClick="register()">רישום</button>
+            <div class="progressBar">
+                <progress value="0"></progress>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleNewUser() {
+            const newUserDiv = document.querySelector('.newUser');
+            newUserDiv.style.display = newUserDiv.style.display === 'none' ? 'flex' : 'none';
+        }
+    </script>
+</body>
+</html>

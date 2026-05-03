@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap');
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+:root {
+    --font-family: 'Assistant', sans-serif;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family);
+    background-color: #f8f9fa;
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    direction: rtl;
+}
+
+.p-component {
+    font-family: var(--font-family) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family);
+    margin-top: 0;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.field {
+    margin-bottom: 1.5rem;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.p-badge.p-badge-contrast {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+}
+

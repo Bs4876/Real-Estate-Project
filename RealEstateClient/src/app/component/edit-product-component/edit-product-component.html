@@ -1,0 +1,106 @@
+<div class="container p-5">
+  <p-card header="עדכון מוצר">
+    <form (ngSubmit)="onSubmit()" #productForm="ngForm">
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <label class="block mb-2 font-semibold">כותרת *</label>
+          <input pInputText [(ngModel)]="product.title" name="title" required class="w-full" />
+        </div>
+
+        <div class="col-12 md:col-6">
+          <label class="block mb-2 font-semibold">מחיר *</label>
+          <p-inputNumber [(ngModel)]="product.price" name="price" mode="currency" currency="ILS" locale="he-IL" required class="w-full"></p-inputNumber>
+        </div>
+
+        <div class="col-12">
+          <label class="block mb-2 font-semibold">תיאור *</label>
+          <textarea pInputText [(ngModel)]="product.description" name="description" required class="w-full" rows="4"></textarea>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <label class="block mb-2 font-semibold">עיר *</label>
+          <input pInputText [(ngModel)]="product.city" name="city" required class="w-full" />
+        </div>
+
+        <div class="col-12 md:col-6">
+          <label class="block mb-2 font-semibold">קטגוריה *</label>
+          <p-select [options]="categories" [(ngModel)]="product.categoryId" 
+                    optionLabel="categoryName" optionValue="categoryId" 
+                    placeholder="בחר קטגוריה" name="category" required class="w-full"></p-select>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <label class="block mb-2 font-semibold">סוג עסקה *</label>
+          <p-select [options]="transactionTypes" [(ngModel)]="product.TransactionType" 
+                    optionLabel="label" optionValue="value" 
+                    placeholder="בחר סוג" name="TransactionType" required class="w-full"></p-select>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <label class="block mb-2 font-semibold">חדרים</label>
+          <p-inputNumber [(ngModel)]="product.rooms" name="rooms" [showButtons]="true" [min]="0" class="w-full"></p-inputNumber>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <label class="block mb-2 font-semibold">מיטות</label>
+          <p-inputNumber [(ngModel)]="product.beds" name="beds" [showButtons]="true" [min]="0" class="w-full"></p-inputNumber>
+        </div>
+
+        <div class="col-12">
+          <p-button label="עדכן תמונות" icon="pi pi-image" 
+                    type="button" (onClick)="toggleImageSection()" 
+                    styleClass="p-button-outlined w-full mb-3"></p-button>
+        </div>
+
+        <div *ngIf="showImageSection" class="col-12">
+          <div class="surface-100 border-round p-4">
+            <h4 class="mt-0 mb-3">עדכון תמונה ראשית</h4>
+            
+            <div *ngIf="currentMainImage && !mainImagePreview" class="mb-3">
+              <p class="font-semibold mb-2">תמונה נוכחית:</p>
+              <img [src]="getFullImageUrl(currentMainImage)" style="max-width: 300px; max-height: 200px; object-fit: contain;" class="border-round" />
+            </div>
+            
+            <input type="file" #mainImageInput accept="image/*" (change)="onMainImageSelect($event)" class="hidden" />
+            <button type="button" pButton label="בחר תמונה ראשית חדשה" icon="pi pi-upload" (click)="mainImageInput.click()" class="mb-3"></button>
+            <div *ngIf="mainImagePreview" class="text-center mb-4">
+              <p class="font-semibold mb-2">תמונה חדשה:</p>
+              <img [src]="mainImagePreview" style="max-width: 300px; max-height: 200px; object-fit: contain;" class="border-round" />
+            </div>
+
+            <h4 class="mb-3">תמונות נוספות</h4>
+            
+            <div *ngIf="currentAdditionalImages.length > 0" class="mb-3">
+              <p class="font-semibold mb-2">תמונות קיימות:</p>
+              <div class="grid">
+                <div class="col-6 md:col-3" *ngFor="let img of currentAdditionalImages; let i = index">
+                  <div class="relative" style="padding-bottom: 75%; overflow: hidden;">
+                    <img [src]="getFullImageUrl(img)" class="border-round" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                    <button type="button" pButton icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm absolute" style="top: 5px; right: 5px; z-index: 1;" (click)="removeExistingImage(i)"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <input type="file" #additionalImagesInput accept="image/*" multiple (change)="onAdditionalImagesSelect($event)" class="hidden" />
+            <button type="button" pButton label="הוסף תמונות חדשות" icon="pi pi-images" (click)="additionalImagesInput.click()" class="mb-3"></button>
+            
+            <div class="grid" *ngIf="additionalImagesPreviews.length > 0">
+              <div class="col-6 md:col-3" *ngFor="let preview of additionalImagesPreviews; let i = index">
+                <div class="relative" style="padding-bottom: 75%; overflow: hidden;">
+                  <img [src]="preview" class="border-round" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" />
+                  <button type="button" pButton icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm absolute" style="top: 5px; right: 5px; z-index: 1;" (click)="removeAdditionalImage(i)"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 flex gap-2 mt-4">
+          <p-button label="שמור שינויים" icon="pi pi-check" type="submit" [disabled]="!productForm.valid" class="flex-1"></p-button>
+          <p-button label="ביטול" icon="pi pi-times" type="button" (onClick)="cancel()" severity="secondary" class="flex-1"></p-button>
+        </div>
+      </div>
+    </form>
+  </p-card>
+</div>

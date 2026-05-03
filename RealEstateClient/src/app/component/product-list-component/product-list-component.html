@@ -1,0 +1,65 @@
+<div class="grid p-4">
+
+  <div class="col-12 md:col-3">
+    <app-product-filter (onFilter)="handleFilter($event)"></app-product-filter>
+  </div>
+
+  <div class="col-12 md:col-9">
+    
+    <!-- Hero Section -->
+    <div class="hero-section mb-5 p-5 bg-gradient border-round shadow-2">
+      <h1 class="text-4xl font-bold text-white mb-3">
+        <i class="pi pi-home ml-2" style="font-size: 2rem;"></i>
+        מצא את הנכס המושלם עבורך
+      </h1>
+      <p class="text-xl text-white-alpha-90 mb-0">
+        מגוון רחב של נכסים איכותיים - צימרים מפנקים, דירות להשכרה ונכסים למכירה
+      </p>
+      <p class="text-lg text-white-alpha-80 mt-2">
+        השירות המקצועי והאמין ביותר בשוק הנדל"ן
+      </p>
+    </div>
+
+    <div class="mb-3 flex justify-content-between align-items-center" *ngIf="products.length > 0">
+        <h2 class="text-900 m-0">נמצאו {{ totalRecords }} נכסים עבורך</h2>
+        <div class="view-toggle flex gap-2">
+          <button pButton icon="pi pi-th-large" 
+                  [class.p-button-outlined]="viewMode !== 'grid'"
+                  (click)="viewMode = 'grid'"
+                  pTooltip="תצוגת רשת"></button>
+          <button pButton icon="pi pi-list" 
+                  [class.p-button-outlined]="viewMode !== 'list'"
+                  (click)="viewMode = 'list'"
+                  pTooltip="תצוגת רשימה"></button>
+        </div>
+    </div>
+
+    <div class="grid" *ngIf="products && products.length > 0 && viewMode === 'grid'" [@fadeIn]>
+      <div *ngFor="let p of products" class="col-12 sm:col-6 lg:col-4 p-2" [@slideIn]>
+        <app-product-card [product]="p"></app-product-card>
+      </div>
+    </div>
+
+    <div class="list-view" *ngIf="products && products.length > 0 && viewMode === 'list'" [@fadeIn]>
+      <div *ngFor="let p of products" class="list-item mb-3" [@slideIn]>
+        <app-product-card [product]="p"></app-product-card>
+      </div>
+    </div>
+
+    <div *ngIf="products.length === 0" class="text-center p-8 bg-white border-round shadow-1">
+      <i class="pi pi-search text-6xl text-400 mb-4"></i>
+      <h3 class="text-900">לא נמצאו מוצרים התואמים לחיפוש</h3>
+      <p class="text-600">נסו לשנות את הפילטרים או לאפס את החיפוש</p>
+    </div>
+
+    <div class="mt-5" *ngIf="products.length > 0">
+      <p-paginator 
+        [rows]="rows" 
+        [totalRecords]="totalRecords" 
+        [rowsPerPageOptions]="[9, 18, 27]"
+        (onPageChange)="loadProducts($event)">
+      </p-paginator>
+    </div>
+
+  </div>
+</div>

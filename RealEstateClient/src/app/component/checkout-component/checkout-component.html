@@ -1,0 +1,151 @@
+<div class="container p-5">
+  <h1 class="text-3xl font-bold mb-4">
+    <i class="pi pi-credit-card mr-2"></i>
+    תשלום מאובטח
+  </h1>
+
+  <div class="grid">
+    <div class="col-12 lg:col-8">
+      <!-- Payment Method Selection -->
+      <div class="card p-4 mb-3">
+        <h3 class="mb-4"><i class="pi pi-wallet mr-2"></i>בחר אמצעי תשלום</h3>
+        
+        <div class="flex flex-column gap-3">
+          <div class="field-radiobutton p-3 border-round" [class.selected-payment]="paymentMethod === 'credit'">
+            <p-radiobutton name="payment" value="credit" [(ngModel)]="paymentMethod" inputId="credit"></p-radiobutton>
+            <label for="credit" class="mr-2 cursor-pointer">
+              <i class="pi pi-credit-card mr-2 text-xl"></i>
+              <span class="font-semibold">כרטיס אשראי</span>
+            </label>
+          </div>
+          
+          <div class="field-radiobutton p-3 border-round" [class.selected-payment]="paymentMethod === 'paypal'">
+            <p-radiobutton name="payment" value="paypal" [(ngModel)]="paymentMethod" inputId="paypal"></p-radiobutton>
+            <label for="paypal" class="mr-2 cursor-pointer">
+              <i class="pi pi-paypal mr-2 text-xl"></i>
+              <span class="font-semibold">PayPal</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credit Card Form -->
+      <div class="card p-4 mb-3" *ngIf="paymentMethod === 'credit'">
+        <h3 class="mb-4"><i class="pi pi-credit-card mr-2"></i>פרטי כרטיס אשראי</h3>
+        
+        <div class="grid">
+          <div class="col-12">
+            <label for="cardNumber" class="block mb-2 font-semibold">מספר כרטיס</label>
+            <p-inputMask id="cardNumber" mask="9999-9999-9999-9999" [(ngModel)]="cardNumber" 
+                         placeholder="1234-5678-9012-3456" styleClass="w-full"></p-inputMask>
+          </div>
+          
+          <div class="col-12">
+            <label for="cardName" class="block mb-2 font-semibold">שם בעל הכרטיס</label>
+            <input pInputText id="cardName" [(ngModel)]="cardName" 
+                   placeholder="שם מלא כפי שמופיע בכרטיס" class="w-full" />
+          </div>
+          
+          <div class="col-6">
+            <label for="cardExpiry" class="block mb-2 font-semibold">תוקף</label>
+            <p-inputMask id="cardExpiry" mask="99/99" [(ngModel)]="cardExpiry" 
+                         placeholder="MM/YY" styleClass="w-full"></p-inputMask>
+          </div>
+          
+          <div class="col-6">
+            <label for="cardCvv" class="block mb-2 font-semibold">CVV</label>
+            <p-inputMask id="cardCvv" mask="999" [(ngModel)]="cardCvv" 
+                         placeholder="123" styleClass="w-full"></p-inputMask>
+          </div>
+        </div>
+        
+        <div class="mt-3 p-3 bg-blue-50 border-round flex align-items-center gap-2">
+          <i class="pi pi-shield text-blue-500"></i>
+          <span class="text-sm text-600">התשלום שלך מאובטח ומוצפן</span>
+        </div>
+      </div>
+
+      <!-- PayPal Form -->
+      <div class="card p-4 mb-3" *ngIf="paymentMethod === 'paypal'">
+        <h3 class="mb-4"><i class="pi pi-paypal mr-2"></i>פרטי PayPal</h3>
+        
+        <div class="field">
+          <label for="paypalEmail" class="block mb-2 font-semibold">כתובת אימייל PayPal</label>
+          <input pInputText id="paypalEmail" [(ngModel)]="paypalEmail" 
+                 type="email" placeholder="example@email.com" class="w-full" />
+        </div>
+        
+        <div class="mt-3 p-3 bg-blue-50 border-round flex align-items-center gap-2">
+          <i class="pi pi-info-circle text-blue-500"></i>
+          <span class="text-sm text-600">תועבר לדף PayPal להשלמת התשלום</span>
+        </div>
+      </div>
+
+      <!-- Terms and Conditions -->
+      <div class="card p-4">
+        <div class="flex align-items-start gap-3">
+          <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms"></p-checkbox>
+          <label for="terms" class="cursor-pointer">
+            <span class="font-semibold">אני מאשר/ת את </span>
+            <a href="#" class="text-primary">תנאי השימוש</a>
+            <span> ו</span>
+            <a href="#" class="text-primary">מדיניות הפרטיות</a>
+            <span> של האתר</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="mt-3 p-3 bg-orange-50 border-round">
+        <p class="text-sm text-600 m-0">
+          <i class="pi pi-info-circle mr-2"></i>
+          <strong>שים לב:</strong> זהו סימולציה של תשלום למטרות הדגמה בלבד. לא יבוצע חיוב אמיתי.
+        </p>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-12 lg:col-4">
+      <div class="card p-4 sticky" style="top: 20px;">
+        <h3 class="mb-4"><i class="pi pi-shopping-cart mr-2"></i>סיכום הזמנה</h3>
+        
+        <div class="mb-3">
+          <div class="flex justify-content-between mb-2" *ngFor="let item of cartItems">
+            <span class="text-sm">{{ item.title }}</span>
+            <span class="text-sm font-semibold" *ngIf="item.transactionType !== 'מכירה'">₪{{ item.price | number }}</span>
+            <span class="text-sm font-semibold" *ngIf="item.transactionType === 'מכירה'">סיור</span>
+          </div>
+        </div>
+        
+        <div class="border-top-1 border-200 pt-3 mt-3">
+          <div class="flex justify-content-between mb-2">
+            <span>סה"כ פריטים:</span>
+            <span class="font-bold">{{ cartItems.length }}</span>
+          </div>
+        </div>
+        
+        <div class="border-top-1 border-200 pt-3 mt-3 mb-3">
+          <div class="flex justify-content-between align-items-center">
+            <span class="text-xl font-bold">סה"כ לתשלום:</span>
+            <span class="text-primary font-bold text-3xl">₪{{ getTotalPrice() | number }}</span>
+          </div>
+        </div>
+        
+        <button pButton label="אישור ותשלום" icon="pi pi-check" 
+                class="w-full p-button-lg p-button-success mb-2" 
+                [disabled]="isProcessing || !isFormValid()"
+                [loading]="isProcessing"
+                (click)="completeOrder()"></button>
+        
+        <button pButton label="חזרה לסל" icon="pi pi-arrow-right" 
+                class="w-full p-button-outlined" 
+                [disabled]="isProcessing"
+                (click)="goBack()"></button>
+                
+        <div class="mt-3 text-center">
+          <i class="pi pi-lock text-500 mr-1"></i>
+          <span class="text-xs text-500">תשלום מאובטח ומוצפן</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

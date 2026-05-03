@@ -1,0 +1,151 @@
+<div class="container p-5 favorites-page">
+  <h1 class="page-title text-4xl font-bold mb-4 flex align-items-center gap-3">
+    <i class="pi pi-heart-fill text-red-500"></i>
+    <span>המועדפים שלי</span>
+  </h1>
+
+  <div *ngIf="favorites.length === 0" class="empty-state text-center p-8">
+    <i class="pi pi-heart" style="font-size: 4rem; color: #ccc;"></i>
+    <p class="text-xl mt-4 text-600">אין לך מועדפים עדיין</p>
+    <p class="text-500">שמור נכסים שמעניינים אותך כדי לראות אותם כאן</p>
+    <button pButton label="חזרה לקטלוג" icon="pi pi-arrow-left" 
+            iconPos="right"
+            [routerLink]="['/products']" class="mt-4"></button>
+  </div>
+
+  <div *ngIf="favorites.length > 0" class="grid favorites-grid">
+    <div *ngFor="let product of favorites; let i = index" class="col-12 md:col-6 lg:col-4 favorite-card-wrapper">
+      <p-card class="product-card h-full">
+        <ng-template pTemplate="header">
+          <img [src]="getImageUrl(product.imageUrl)" 
+               alt="{{product.title}}" 
+               class="w-full product-image" 
+               style="height: 200px; object-fit: cover;">
+        </ng-template>
+        
+        <div class="flex flex-column h-full">
+          <h3 class="text-xl font-bold mb-2">{{product.title}}</h3>
+          <p class="text-600 mb-2 flex align-items-center gap-2">
+            <i class="pi pi-map-marker"></i>
+            <span>{{product.city}}</span>
+          </p>
+          <div class="mb-2 rating-section" *ngIf="product.rating">
+            <span *ngFor="let star of [1,2,3,4,5]" 
+                  [style.color]="star <= product.rating ? '#fbbf24' : '#d1d5db'"
+                  style="font-size: 1.2rem;">★</span>
+            <span class="text-sm text-600 mr-2">(הדירוג שלי: {{product.rating}}/5)</span>
+            <button pButton icon="pi pi-pencil" 
+                    class="p-button-text p-button-sm edit-rating-btn"
+                    (click)="editRating(product)"
+                    pTooltip="עדכן דירוג"></button>
+          </div>
+          <p class="text-2xl font-bold text-primary mb-3">₪{{product.price | number}}</p>
+          
+          <div class="flex gap-2 mt-auto action-buttons">
+            <button pButton label="צפה בפרטים" icon="pi pi-eye" 
+                    iconPos="right"
+                    [routerLink]="['/product-details', product.productId]" 
+                    [queryParams]="{returnTo: 'favorites'}"
+                    class="flex-1"></button>
+            <button pButton icon="pi pi-phone" 
+                    severity="success"
+                    [text]="true"
+                    (click)="openContactDialog(product)"
+                    pTooltip="יצירת קשר"></button>
+            <button pButton icon="pi pi-trash" 
+                    severity="danger"
+                    [text]="true"
+                    class="delete-btn"
+                    (click)="removeFromFavorites(product.productId)"
+                    pTooltip="הסר ממועדפים"></button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>
+
+<p-dialog [(visible)]="showEditRatingDialog" [modal]="true" [style]="{width: '400px'}" header="עדכן דירוג">
+  <div class="text-center p-4">
+    <h3 class="mb-3">עדכן את הדירוג של {{ editingProduct?.title }}</h3>
+    <div class="flex justify-content-center gap-2 mb-4 star-rating">
+      <i *ngFor="let star of [1,2,3,4,5]" 
+         class="pi pi-star-fill cursor-pointer"
+         [style.color]="star <= (hoverRating || selectedRating) ? '#fbbf24' : '#d1d5db'"
+         [style.font-size]="'3rem'"
+         (click)="setRating(star)"
+         (mouseenter)="setHoverRating(star)"
+         (mouseleave)="setHoverRating(0)"></i>
+    </div>
+    <p class="text-600" *ngIf="selectedRating > 0">דירוג חדש: {{ selectedRating }} כוכבים</p>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            iconPos="right"
+            (click)="showEditRatingDialog=false" class="p-button-text"></button>
+    <button pButton label="שמור" icon="pi pi-check" 
+            iconPos="right"
+            (click)="saveRating()" 
+            [disabled]="selectedRating === 0"
+            class="p-button-success"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showContactDialog" [modal]="true" [style]="{width: '550px'}" header="יצירת קשר">
+  <div class="p-3" *ngIf="contactProduct">
+    <div class="mb-3 p-3 bg-blue-50 border-round">
+      <div class="flex align-items-center gap-3 mb-2">
+        <i class="pi pi-user contact-icon" style="font-size: 1.5rem;"></i>
+        <div>
+          <p class="font-bold text-lg m-0">בעל הנכס: {{ ownerDetails?.fullName || 'טוען...' }}</p>
+          <p class="text-sm text-600 m-0">נכס: {{ contactProduct.title }}</p>
+        </div>
+      </div>
+      <div class="border-top-1 border-blue-200 pt-2 mt-2">
+        <p class="text-sm m-0 flex align-items-center gap-2">
+          <i class="pi pi-phone"></i>
+          <strong>ליצירת קשר:</strong> 1-800-{{ ownerDetails?.phone || 'טוען...' }}
+        </p>
+      </div>
+    </div>
+    
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">שם מלא *</label>
+      <input pInputText [(ngModel)]="contactForm.name" class="w-full" required />
+    </div>
+    
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">טלפון *</label>
+      <input pInputText [(ngModel)]="contactForm.phone" class="w-full" required 
+             (ngModelChange)="phoneError = ''" />
+      <small class="text-red-500" *ngIf="phoneError">{{ phoneError }}</small>
+    </div>
+    
+    <div class="field mb-3">
+      <label class="block mb-2 font-semibold">אימייל *</label>
+      <input pInputText type="email" [(ngModel)]="contactForm.email" class="w-full" required 
+             (ngModelChange)="emailError = ''" />
+      <small class="text-red-500" *ngIf="emailError">{{ emailError }}</small>
+    </div>
+    
+    <div class="field mb-2">
+      <label class="block mb-2 font-semibold">הודעה</label>
+      <textarea [(ngModel)]="contactForm.message" rows="2" class="w-full p-2 border-1 border-300 border-round" 
+                placeholder="שתף פרטים נוספים..."></textarea>
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <button pButton label="ביטול" icon="pi pi-times" 
+            iconPos="right"
+            (click)="showContactDialog=false" class="p-button-text"></button>
+    <button pButton label="שלח" icon="pi pi-send" 
+            iconPos="right"
+            (click)="submitContact()" 
+            [disabled]="!contactForm.name || !contactForm.phone || !contactForm.email"
+            class="p-button-success"></button>
+  </ng-template>
+</p-dialog>
+
+<p-toast [dir]="'rtl'"></p-toast>

@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="utf-8" />
+    <title>עדכון פרטים</title>
+    <script src="update.js" defer></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .link {
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .newUser {
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        label {
+            margin: 5px 0;
+        }
+
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #218838;
+            }
+    </style>
+    <script>
+        function toggleUpdateSection() {
+            const newUserDiv = document.querySelector('.newUser');
+            newUserDiv.style.display = newUserDiv.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        
+    </script>
+</head>
+<body>
+    <h1>ממשק עדכון פרטים</h1>
+    <a href="javascript:void(0);" class="link" onclick="toggleUpdateSection()">לעדכון פרטים</a>
+    <div class="newUser">
+        <label for="userName">שם משתמש</label>
+        <input type="email" id="userName" name="userName" required />
+        <label for="firstName">שם פרטי</label>
+        <input type="text" id="firstName" name="firstName" required />
+        <label for="lastName">שם משפחה</label>
+        <input type="text" id="lastName" name="lastName" required />
+        <label for="password">סיסמא</label>
+        <input type="password" id="password" name="password" required />
+        <button onclick="update()">עדכן</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* מאפשר ל-main להתפשט */
+}
+
+.main-content {
+  flex: 1;           /* מתפשט תחת ה-header */
+  padding: 20px;
+
+  display: grid; /* או flex */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+app-header {
+  width: 100%;
+  background-color: #f8f8f8;
+  padding: 15px 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+}

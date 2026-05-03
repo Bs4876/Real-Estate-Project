@@ -1,0 +1,201 @@
+.favorites-page {
+  animation: fadeIn 0.6s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  min-height: 100vh;
+}
+
+.page-title {
+  animation: slideInDown 0.6s ease;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.empty-state {
+  animation: fadeInScale 0.8s ease;
+  
+  i {
+    color: #a78bfa !important;
+    animation: heartbeat 2s infinite;
+  }
+}
+
+.favorites-grid {
+  animation: fadeIn 0.6s ease;
+}
+
+.favorite-card-wrapper {
+  animation: slideInUp 0.6s ease forwards;
+  opacity: 0;
+  
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.08}s;
+    }
+  }
+}
+
+.product-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border: 1px solid #e0e7ff;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
+    border-color: #c7d2fe;
+  }
+  
+  .product-image {
+    transition: transform 0.4s ease;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    
+    &:hover {
+      transform: scale(1.08);
+    }
+  }
+}
+
+.rating-section {
+  animation: sparkle 1.5s ease;
+  
+  i {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.2) rotate(15deg);
+      filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5));
+    }
+  }
+}
+
+.edit-rating-btn {
+  transition: all 0.3s ease;
+  color: #667eea;
+  
+  &:hover {
+    transform: scale(1.15) rotate(10deg);
+    color: #5568d3;
+  }
+}
+
+.action-buttons {
+  button {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+  
+  .delete-btn {
+    &:hover {
+      transform: scale(1.08) rotate(-3deg);
+    }
+  }
+}
+
+.star-rating {
+  i {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    &:hover {
+      transform: scale(1.25) rotate(12deg);
+      filter: drop-shadow(0 2px 6px rgba(251, 191, 36, 0.6));
+    }
+  }
+}
+
+::ng-deep {
+  .p-button {
+    transition: all 0.3s ease;
+    
+    &:not(.p-button-text):not(.p-button-outlined) {
+      background: linear-gradient(135deg, #667eea, #764ba2) !important;
+      border: none !important;
+      
+      &:hover {
+        background: linear-gradient(135deg, #5568d3, #6a3f8f) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+    }
+  }
+  
+  .contact-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  10%, 30% {
+    transform: scale(1.1);
+  }
+  20%, 40% {
+    transform: scale(1);
+  }
+}

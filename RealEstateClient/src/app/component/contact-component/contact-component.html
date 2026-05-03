@@ -1,0 +1,132 @@
+<div class="contact-page">
+  <div class="container p-5">
+    <div class="grid">
+      <div class="col-12 lg:col-8">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="p-4 header-gradient">
+              <h1 class="text-3xl font-bold m-0 header-title">
+                <i class="pi pi-envelope ml-3"></i>צור קשר
+              </h1>
+              <p class="mt-2 header-subtitle">נשמח לעזור! מלא את הטופס ונחזור אליך בהקדם</p>
+            </div>
+          </ng-template>
+
+          <form (ngSubmit)="onSubmit()" #contactFormRef="ngForm">
+            <div class="grid">
+              <div class="col-12 md:col-6">
+                <div class="field mb-4">
+                  <label class="block font-bold mb-2">שם מלא *</label>
+                  <input type="text" pInputText [(ngModel)]="contactForm.name" name="name" 
+                         required class="w-full" placeholder="הכנס את שמך המלא" />
+                </div>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <div class="field mb-4">
+                  <label class="block font-bold mb-2">אימייל *</label>
+                  <input type="email" pInputText [(ngModel)]="contactForm.email" name="email" 
+                         required email #emailInput="ngModel"
+                         class="w-full" placeholder="example@email.com" />
+                  <small class="text-red-500" *ngIf="emailInput.invalid && emailInput.touched">
+                    נא להזין כתובת אימייל תקינה
+                  </small>
+                </div>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <div class="field mb-4">
+                  <label class="block font-bold mb-2">טלפון</label>
+                  <input type="tel" pInputText [(ngModel)]="contactForm.phone" name="phone" 
+                         pattern="^0[2-9]\d{7,8}$" #phoneInput="ngModel"
+                         class="w-full" placeholder="050-1234567" />
+                  <small class="text-red-500" *ngIf="phoneInput.invalid && phoneInput.touched && contactForm.phone">
+                    מספר טלפון לא תקין (לדוגמה: 0501234567)
+                  </small>
+                </div>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <div class="field mb-4">
+                  <label class="block font-bold mb-2">נושא *</label>
+                  <input type="text" pInputText [(ngModel)]="contactForm.subject" name="subject" 
+                         required class="w-full" placeholder="נושא הפנייה" />
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="field mb-4">
+                  <label class="block font-bold mb-2">הודעה *</label>
+                  <textarea [(ngModel)]="contactForm.message" name="message" required 
+                            rows="6" class="w-full p-3 border-1 border-300 border-round"
+                            placeholder="כתוב כאן את הודעתך..."></textarea>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <button pButton type="submit" label="שלח פנייה" icon="pi pi-send" 
+                        [disabled]="!contactFormRef.valid" 
+                        class="p-button-lg submit-button"></button>
+              </div>
+            </div>
+          </form>
+        </p-card>
+      </div>
+
+      <div class="col-12 lg:col-4">
+        <p-card header="פרטי התקשרות" class="mb-3">
+          <div class="flex flex-column gap-4">
+            <div class="contact-info-item">
+              <i class="pi pi-phone"></i>
+              <div>
+                <div class="font-bold mb-1">טלפון</div>
+                <div class="text-600">03-1234567</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <i class="pi pi-envelope"></i>
+              <div>
+                <div class="font-bold mb-1">אימייל</div>
+                <div class="text-600">support@realestate.co.il</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <i class="pi pi-map-marker"></i>
+              <div>
+                <div class="font-bold mb-1">כתובת</div>
+                <div class="text-600">רחוב הרצל 123, תל אביב</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <i class="pi pi-clock"></i>
+              <div>
+                <div class="font-bold mb-1">שעות פעילות</div>
+                <div class="text-600">א'-ה': 9:00-18:00</div>
+                <div class="text-600">ו': 9:00-13:00</div>
+              </div>
+            </div>
+          </div>
+        </p-card>
+
+        <p-card header="שאלות נפוצות">
+          <div class="faq-list">
+            <div *ngFor="let faq of faqs; let i = index" class="faq-item-interactive" [class.active]="activeFaq === i" (click)="toggleFaq(i)">
+              <div class="faq-question">
+                <span>{{ faq.question }}</span>
+                <i class="pi" [class.pi-chevron-down]="activeFaq !== i" [class.pi-chevron-up]="activeFaq === i"></i>
+              </div>
+              <div class="faq-answer" [@slideDown]="activeFaq === i ? 'open' : 'closed'" *ngIf="activeFaq === i">
+                {{ faq.answer }}
+              </div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>
