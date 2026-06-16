@@ -40,6 +40,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Host.UseNLog();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
