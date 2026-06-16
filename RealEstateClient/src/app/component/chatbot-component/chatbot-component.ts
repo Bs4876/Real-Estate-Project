@@ -2,12 +2,18 @@ import { Component, ViewEncapsulation, ViewChild, ElementRef, AfterViewChecked }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 
 interface Message {
   text: string;
   isBot: boolean;
   timestamp: Date;
+}
+
+interface ChatMessage {
+  role: string;
+  content: string;
 }
 
 @Component({
@@ -20,12 +26,14 @@ interface Message {
 })
 export class ChatbotComponent implements AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
-  
+
   isOpen = false;
   messages: Message[] = [];
   userInput = '';
   isTyping = false;
   private shouldScroll = false;
+  private history: ChatMessage[] = [];
+
   quickActions = [
     { label: 'נכסים למכירה', icon: 'pi-home', action: 'sale' },
     { label: 'נכסים להשכרה', icon: 'pi-key', action: 'rent' },
@@ -33,7 +41,7 @@ export class ChatbotComponent implements AfterViewChecked {
     { label: 'יצירת קשר', icon: 'pi-phone', action: 'contact' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   ngAfterViewChecked() {
     if (this.shouldScroll) {
@@ -41,61 +49,51 @@ export class ChatbotComponent implements AfterViewChecked {
       this.shouldScroll = false;
     }
   }
-  
+
   scrollToBottom(): void {
     try {
       this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
-    } catch(err) { }
+    } catch(err) {}
   }
 
   toggleChat() {
     this.isOpen = !this.isOpen;
     if (this.isOpen && this.messages.length === 0) {
-      this.addBotMessage('שלום! 👋 אני עוזר הנדל"ן הדיגיטלי. איך אוכל לעזור לך היום?');
+      this.addBotMessage('שלום! 👋 אני עוזר הנדל"ן החכם שלך. אני יכול לעזור לך למצוא נכסים, לענות על שאלות ועוד. איך אוכל לעזור?');
     }
   }
 
   sendMessage() {
-    if (!this.userInput.trim()) return;
-    
-    this.addUserMessage(this.userInput);
-    const input = this.userInput.toLowerCase();
-    this.userInput = '';
-    this.shouldScroll = true;
-    
-    this.isTyping = true;
-    setTimeout(() => {
-      this.isTyping = false;
-      this.handleUserInput(input);
-      this.shouldScroll = true;
-    }, 1000);
-  }
+    if (!this.userInput.trim() || this.isTyping) return;
 
-  handleUserInput(input: string) {
-    if (input.includes('עמלה') || input.includes('תשלום')) {
-      this.addBotMessage('העמלה שלנו:\n• נופש: 3% מהמחיר\n• השכרה: חודש אחד מתוך תקופת השכירות\n• מכירה: ללא עמלה');
-    } else if (input.includes('הוסף') || input.includes('פרסם') || input.includes('נכס')) {
-      this.addBotMessage('כדי להוסיף נכס חדש, לחץ על "הוסף נכס" בתפריט העליון או היכנס לפרופיל שלך.');
-    } else if (input.includes('מועדפים')) {
-      this.addBotMessage('המועדפים שלך נמצאים בתפריט העליון (אייקון הלב ❤️). שם תוכל לראות את כל הנכסים ששמרת.');
-    } else if (input.includes('קשר') || input.includes('עזרה')) {
-      this.addBotMessage('אפשר ליצור קשר דרך:\n• כפתור "יצירת קשר" בכל נכס\n• דף "צור קשר" בתפריט\n• טלפון: 1-800-REALESTATE');
-    } else if (input.includes('מכירה')) {
-      this.router.navigate(['/products'], { queryParams: { type: 'Sale' } });
-      this.addBotMessage('מעביר אותך לנכסים למכירה... 🏠');
-    } else if (input.includes('השכרה')) {
-      this.router.navigate(['/products'], { queryParams: { type: 'Rent' } });
-      this.addBotMessage('מעביר אותך לנכסים להשכרה... 🔑');
-    } else if (input.includes('נופש')) {
-      this.router.navigate(['/products'], { queryParams: { type: 'Vacation' } });
-      this.addBotMessage('מעביר אותך לנכסי נופש... ☀️');
-    } else {
-      this.addBotMessage('אני כאן לעזור! נסה לשאול על:\n• עמלות ותשלומים\n• הוספת נכס\n• מועדפים\n• יצירת קשר\n• חיפוש נכסים');
-    }
+    const userText = this.userInput.trim();
+    this.userInput = '';
+    this.addUserMessage(userText);
+    this.isTyping = true;
+    this.shouldScroll = true;
+
+    this.http.post<{ reply?: string; error?: string }>('https://localhost:44305/api/chat', {
+      message: userText,
+      history: this.history
+    }).subscribe({
+      next: (res) => {
+        this.isTyping = false;
+        const reply = res.reply || res.error || 'מצטער, לא הצלחתי לעבד את הבקשה.';
+        this.addBotMessage(reply);
+        this.history.push({ role: 'user', content: userText });
+        this.history.push({ role: 'assistant', content: reply });
+        this.shouldScroll = true;
+      },
+      error: () => {
+        this.isTyping = false;
+        this.addBotMessage('מצטער, יש בעיה בחיבור לשרת ה-AI. נסה שוב מאוחר יותר.');
+        this.shouldScroll = true;
+      }
+    });
   }
 
   handleQuickAction(action: string) {
-    switch(action) {
+    switch (action) {
       case 'sale':
         this.router.navigate(['/products'], { queryParams: { type: 'Sale' } });
         this.addBotMessage('מעביר אותך לנכסים למכירה... 🏠');
@@ -112,6 +110,13 @@ export class ChatbotComponent implements AfterViewChecked {
         this.router.navigate(['/contact']);
         this.addBotMessage('מעביר אותך לדף יצירת קשר... 📞');
         break;
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
     }
   }
 

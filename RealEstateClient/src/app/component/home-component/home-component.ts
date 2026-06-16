@@ -1,7 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
@@ -14,7 +15,7 @@ import { trigger, transition, style, animate, query, stagger } from '@angular/an
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ButtonModule, ProductCardComponent, ReactiveFormsModule, InputTextModule, ToastModule],
+  imports: [CommonModule, ButtonModule, ProductCardComponent, ReactiveFormsModule, FormsModule, InputTextModule, ToastModule],
   providers: [MessageService],
   templateUrl: './home-component.html',
   styleUrl: './home-component.scss',
@@ -42,6 +43,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   currentIndex: number = 0;
   contactForm: FormGroup;
   isSubmitting = false;
+  aiSearchQuery = '';
+  searchResults: any[] = [];
+  isSearching = false;
+  hasSearched = false;
   
   stats = [
     { key: 'properties', value: 1250, label: 'נכסים פעילים', icon: 'pi-home' },
@@ -96,7 +101,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private elementRef: ElementRef,
     private fb: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private http: HttpClient
   ) {
     this.contactForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -289,5 +295,30 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   
   goToBlog() {
     this.router.navigate(['/blog']);
+  }
+
+  semanticSearch() {
+    if (!this.aiSearchQuery.trim()) return;
+    this.isSearching = true;
+    this.hasSearched = false;
+    this.http.post<{ results?: any[]; error?: string }>('https://localhost:44305/api/search', {
+      query: this.aiSearchQuery
+    }).subscribe({
+      next: (res) => {
+        this.searchResults = res.results || [];
+        this.isSearching = false;
+        this.hasSearched = true;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isSearching = false;
+        this.hasSearched = true;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onSearchKey(event: KeyboardEvent) {
+    if (event.key === 'Enter') this.semanticSearch();
   }
 }

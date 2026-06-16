@@ -1,18 +1,26 @@
-<div class="chatbot-container">
+<div class="chatbot-wrapper">
+
   <!-- Floating Button -->
-  <button class="chat-button" (click)="toggleChat()" [class.open]="isOpen">
-    <i [class]="isOpen ? 'pi pi-times' : 'pi pi-comments'"></i>
+  <button class="fab" (click)="toggleChat()" [class.open]="isOpen">
+    <span class="fab-icon">
+      <i [class]="isOpen ? 'pi pi-times' : 'pi pi-comments'"></i>
+    </span>
+    <span class="fab-label" *ngIf="!isOpen">שאל אותי</span>
   </button>
 
   <!-- Chat Window -->
   <div class="chat-window" [class.open]="isOpen">
+
     <!-- Header -->
     <div class="chat-header">
-      <div class="flex align-items-center gap-2">
-        <i class="pi pi-comments"></i>
-        <div>
-          <h3>עוזר נדל"ן</h3>
-          <span class="status">מקוון</span>
+      <div class="header-avatar">
+        <i class="pi pi-home"></i>
+      </div>
+      <div class="header-info">
+        <h3>עוזר נדל"ן AI</h3>
+        <div class="status-row">
+          <span class="status-dot"></span>
+          <span class="status-text">מקוון · מופעל על ידי AI</span>
         </div>
       </div>
       <button class="close-btn" (click)="toggleChat()">
@@ -22,42 +30,59 @@
 
     <!-- Messages -->
     <div class="chat-messages" #messagesContainer>
-      <div *ngFor="let msg of messages" 
-           [class]="msg.isBot ? 'message bot-message' : 'message user-message'">
-        <div class="message-content">
-          <p [innerHTML]="msg.text.replace(/\n/g, '<br>')"></p>
-          <span class="timestamp">{{ msg.timestamp | date:'HH:mm' }}</span>
-        </div>
-      </div>
-      
-      <div *ngIf="isTyping" class="message bot-message">
-        <div class="message-content typing-indicator">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-    </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions" *ngIf="messages.length === 1">
-      <button *ngFor="let action of quickActions" 
-              class="quick-action-btn"
-              (click)="handleQuickAction(action.action)">
-        <i [class]="'pi ' + action.icon"></i>
-        {{ action.label }}
-      </button>
+      <!-- Welcome card (only before first message) -->
+      <div class="welcome-card" *ngIf="messages.length === 0">
+        <div class="welcome-icon">🏡</div>
+        <h4>שלום! אני כאן לעזור</h4>
+        <p>אני יכול לעזור לך למצוא נכסים, לענות על שאלות ולהתאים לך את הנכס המושלם</p>
+      </div>
+
+      <!-- Quick Actions (only before first message) -->
+      <div class="quick-actions" *ngIf="messages.length === 0">
+        <button *ngFor="let action of quickActions"
+                class="quick-btn"
+                (click)="handleQuickAction(action.action)">
+          <i [class]="'pi ' + action.icon"></i>
+          <span>{{ action.label }}</span>
+        </button>
+      </div>
+
+      <!-- Messages -->
+      <div *ngFor="let msg of messages"
+           [class]="msg.isBot ? 'msg-row bot' : 'msg-row user'">
+        <div class="avatar" *ngIf="msg.isBot">
+          <i class="pi pi-home"></i>
+        </div>
+        <div class="bubble">
+          <p [innerHTML]="msg.text.replace(/\n/g, '<br>')"></p>
+          <span class="time">{{ msg.timestamp | date:'HH:mm' }}</span>
+        </div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="msg-row bot" *ngIf="isTyping">
+        <div class="avatar"><i class="pi pi-home"></i></div>
+        <div class="bubble typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
     </div>
 
     <!-- Input -->
-    <div class="chat-input">
-      <input type="text" 
-             [(ngModel)]="userInput" 
-             (keyup.enter)="sendMessage()"
-             placeholder="הקלד הודעה...">
-      <button (click)="sendMessage()" [disabled]="!userInput.trim()">
+    <div class="chat-input-area">
+      <input
+        type="text"
+        [(ngModel)]="userInput"
+        (keydown)="onKeyDown($event)"
+        placeholder="כתוב הודעה..."
+        [disabled]="isTyping"
+      />
+      <button class="send-btn" (click)="sendMessage()" [disabled]="!userInput.trim() || isTyping">
         <i class="pi pi-send"></i>
       </button>
     </div>
+
   </div>
 </div>

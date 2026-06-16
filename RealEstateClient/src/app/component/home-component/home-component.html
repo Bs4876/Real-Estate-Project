@@ -13,6 +13,52 @@
     </div>
   </section>
 
+  <!-- Semantic Search Section -->
+  <section class="semantic-search-section" @fadeInUp>
+    <div class="container">
+      <div class="search-box">
+        <h2>🔍 חיפוש חכם</h2>
+        <p>תאר מה אתה מחפש במילים שלך - ה-AI ימצא את הנכס המתאים</p>
+        <div class="search-input-row">
+          <input
+            type="text"
+            [(ngModel)]="aiSearchQuery"
+            (keydown)="onSearchKey($event)"
+            placeholder="למשל: דירה שקטה בצפון עם נוף להרים..."
+            class="search-input"
+          />
+          <button class="search-btn" (click)="semanticSearch()" [disabled]="isSearching">
+            <i [class]="isSearching ? 'pi pi-spin pi-spinner' : 'pi pi-search'"></i>
+            {{ isSearching ? 'מחפש...' : 'חפש' }}
+          </button>
+        </div>
+
+        <!-- Results -->
+        <div class="search-results" *ngIf="hasSearched">
+          <div *ngIf="searchResults.length === 0" class="no-results">
+            <i class="pi pi-inbox"></i>
+            <p>לא נמצאו נכסים מתאימים. נסה תיאור אחר.</p>
+          </div>
+          <div class="results-grid" *ngIf="searchResults.length > 0">
+            <div class="result-card" *ngFor="let item of searchResults">
+              <div class="result-score">התאמה: {{ (item.score * 100).toFixed(0) }}%</div>
+              <h4>{{ item.title }}</h4>
+              <div class="result-details">
+                <span><i class="pi pi-map-marker"></i> {{ item.city }}</span>
+                <span><i class="pi pi-tag"></i> {{ item.transactionType }}</span>
+                <span><i class="pi pi-home"></i> {{ item.rooms }} חדרים</span>
+              </div>
+              <div class="result-price">₪{{ item.price | number }}</div>
+              <div class="result-available" [class.available]="item.isAvailable">
+                {{ item.isAvailable ? '✅ זמין' : '❌ לא זמין' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Statistics Section -->
   <section class="stats-section" @fadeInUp>
     <div class="container">
